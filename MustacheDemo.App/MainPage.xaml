@@ -34,5 +34,29 @@
     DataContext="{Binding RelativeSource={RelativeSource Self}, Converter={StaticResource Viewmodellocator}}">
 
     <Grid Background="{ThemeResource ApplicationPageBackgroundThemeBrush}">
+        <Pivot BorderBrush="Green" BorderThickness="1">
+            <PivotItem Header="Template">
+                <TextBox AcceptsReturn="True" 
+                         ScrollViewer.HorizontalScrollBarVisibility="Visible"
+                         ScrollViewer.VerticalScrollBarVisibility="Visible" />
+            </PivotItem>
+            <PivotItem Header="Data Structure">
+                <TextBlock Text="Content of pivot item 2."/>
+            </PivotItem>
+        </Pivot>
     </Grid>
+    <Page.BottomAppBar>
+        <CommandBar>
+            <CommandBar.PrimaryCommands>
+                <AppBarButton HorizontalAlignment="Center" Label="Render">
+                    <AppBarButton.Icon>
+                        <PathIcon HorizontalAlignment="Center"
+                                  Data="M 12,0 l -7,10 h 3 l -8,10
+		 l 15,-12 h -4 l 9,-8
+		 z" />
+                    </AppBarButton.Icon>
+                </AppBarButton>
+            </CommandBar.PrimaryCommands>
+        </CommandBar>
+    </Page.BottomAppBar>
 </Page>
