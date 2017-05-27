@@ -29,11 +29,11 @@ using System.Runtime.InteropServices;
 // set of attributes. Change these attribute values to modify the information
 // associated with an assembly.
 [assembly: AssemblyTitle("MustacheDemo")]
-[assembly: AssemblyDescription("")]
+[assembly: AssemblyDescription("Demo UWP app for Mustache.PCL library")]
 [assembly: AssemblyConfiguration("")]
-[assembly: AssemblyCompany("")]
+[assembly: AssemblyCompany("Daniele Scipioni")]
 [assembly: AssemblyProduct("MustacheDemo")]
-[assembly: AssemblyCopyright("Copyright ©  2017")]
+[assembly: AssemblyCopyright("Copyright © 2017 Daniele Scipioni")]
 [assembly: AssemblyTrademark("")]
 [assembly: AssemblyCulture("")]
 
