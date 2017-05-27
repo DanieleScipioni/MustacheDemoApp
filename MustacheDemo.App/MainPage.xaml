@@ -31,14 +31,18 @@
     xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
     xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
     mc:Ignorable="d"
-    DataContext="{Binding RelativeSource={RelativeSource Self}, Converter={StaticResource Viewmodellocator}}">
+    DataContext="{Binding RelativeSource={RelativeSource Self}, Converter={StaticResource ViewModelLocator}}">
 
     <Grid Background="{ThemeResource ApplicationPageBackgroundThemeBrush}">
         <Pivot BorderBrush="Green" BorderThickness="1">
             <PivotItem Header="Template">
                 <TextBox AcceptsReturn="True" 
                          ScrollViewer.HorizontalScrollBarVisibility="Visible"
-                         ScrollViewer.VerticalScrollBarVisibility="Visible" />
+                         ScrollViewer.VerticalScrollBarVisibility="Visible"
+                         TextChanged="TemplateTextBox_OnTextChanged"
+                         Text="{x:Bind _viewModel.Template, Mode=OneWay}"
+                         IsReadOnly="{x:Bind _viewModel.RenderCompleted, Mode=OneWay}"
+                         PlaceholderText="Fill with your template" />
             </PivotItem>
             <PivotItem Header="Data Structure">
                 <TextBlock Text="Content of pivot item 2."/>
@@ -48,14 +52,16 @@
     <Page.BottomAppBar>
         <CommandBar>
             <CommandBar.PrimaryCommands>
-                <AppBarButton HorizontalAlignment="Center" Label="Render">
+                <AppBarButton HorizontalAlignment="Center" Label="Render"
+                              Command="{x:Bind _viewModel.RenderCommand}">
                     <AppBarButton.Icon>
                         <PathIcon HorizontalAlignment="Center"
                                   Data="M 12,0 l -7,10 h 3 l -8,10
-		 l 15,-12 h -4 l 9,-8
-		 z" />
+                                        l 15,-12 h -4 l 9,-8
+                                        z" />
                     </AppBarButton.Icon>
                 </AppBarButton>
+                <AppBarButton Icon="Edit" Label="Edit template" Command="{x:Bind _viewModel.EditTemplateCommand}"/>
             </CommandBar.PrimaryCommands>
         </CommandBar>
     </Page.BottomAppBar>

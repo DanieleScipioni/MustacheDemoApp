@@ -22,9 +22,76 @@
 // SOFTWARE.
 // ******************************************************************************
 
+using MustacheDemo.Core;
+
 namespace MustacheDemo.App.ViewModels
 {
-    internal class MainPageViewModel
+    internal class MainPageViewModel : BindableBase
     {
+        private bool _canRender;
+
+        private string _template;
+        public string Template
+        {
+            get { return _template; }
+            set {
+                if (SetProperty(ref _template, value))
+                {
+                    bool templateEmpty = string.IsNullOrEmpty(_template);
+                    if (_canRender && templateEmpty || !_canRender && !templateEmpty)
+                    {
+                        _canRender = !templateEmpty;
+                        RenderCommand.RaiseCanExecuteChanged();
+                    }
+                }
+            }
+        }
+
+        private bool _renderCompleted;
+        public bool RenderCompleted
+        {
+            get { return _renderCompleted; }
+            private set { SetProperty(ref _renderCompleted, value); }
+        }
+
+        public readonly DelegateCommand RenderCommand;
+
+        public readonly DelegateCommand EditTemplateCommand;
+
+        private string _templateCache;
+
+        public MainPageViewModel()
+        {
+            RenderCommand = new DelegateCommand(Render, RenderCanExecute);
+            EditTemplateCommand = new DelegateCommand(EditTemplate, EditTemplateCanExecute);
+        }
+
+        private void Render(object parameter)
+        {
+            _templateCache = Template;
+            Template = "{{Mustache}}";
+            RenderCompleted = true;
+            RenderCommand.RaiseCanExecuteChanged();
+            EditTemplateCommand.RaiseCanExecuteChanged();
+        }
+
+        private bool RenderCanExecute(object parameter)
+        {
+            return !RenderCompleted;
+        }
+
+        private void EditTemplate(object parameter)
+        {
+            Template = _templateCache;
+            _templateCache = null;
+            RenderCompleted = false;
+            RenderCommand.RaiseCanExecuteChanged();
+            EditTemplateCommand.RaiseCanExecuteChanged();
+        }
+
+        private bool EditTemplateCanExecute(object parameter)
+        {
+            return RenderCompleted;
+        }
     }
 }

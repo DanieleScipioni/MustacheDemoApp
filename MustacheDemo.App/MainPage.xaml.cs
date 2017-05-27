@@ -22,14 +22,25 @@
 // SOFTWARE.
 // ******************************************************************************
 
+using Windows.UI.Xaml.Controls;
+using MustacheDemo.App.ViewModels;
+
 namespace MustacheDemo.App
 {
     public sealed partial class MainPage
 
     {
+        private readonly MainPageViewModel _viewModel;
+
         public MainPage()
         {
             InitializeComponent();
+            _viewModel = DataContext as MainPageViewModel;
+        }
+
+        private void TemplateTextBox_OnTextChanged(object sender, TextChangedEventArgs e)
+        {
+            _viewModel.Template = ((TextBox) sender).Text;
         }
     }
 }
