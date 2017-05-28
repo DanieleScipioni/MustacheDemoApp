@@ -55,7 +55,35 @@
     </Page.Resources>
 
     <Grid Background="{ThemeResource ApplicationPageBackgroundThemeBrush}">
-        <Pivot BorderBrush="Green" BorderThickness="1">
+        <!-- 
+        This StackPanel is used only to define command bars,
+        after page initialization all children are removed from it and the
+        command bars are set to Page.BottomAppBar with a event handler
+        -->
+        <StackPanel x:Name="HiddenElementContainer" Visibility="Collapsed">
+            <CommandBar x:Name="TemplateCommandBar">
+                <CommandBar.PrimaryCommands>
+                    <AppBarButton HorizontalAlignment="Center" Label="Render"
+                              Command="{x:Bind _viewModel.RenderCommand}">
+                        <AppBarButton.Icon>
+                            <PathIcon HorizontalAlignment="Center"
+                                  Data="M 12,0 l -7,10 h 3 l -8,10
+                                        l 15,-12 h -4 l 9,-8
+                                        z" />
+                        </AppBarButton.Icon>
+                    </AppBarButton>
+                    <AppBarButton Icon="Edit" Label="Edit template" Command="{x:Bind _viewModel.EditTemplateCommand}"/>
+                </CommandBar.PrimaryCommands>
+            </CommandBar>
+            <CommandBar x:Name="DataCommandBar">
+                <CommandBar.PrimaryCommands>
+                    <AppBarButton Icon="Delete" Label="Add data" Command="{x:Bind _viewModel.AddDataCommand}"/>
+                    <AppBarButton Icon="Edit" Label="Add data" Command="{x:Bind _viewModel.AddDataCommand}"/>
+                    <AppBarButton Icon="Add" Label="Add data" Command="{x:Bind _viewModel.AddDataCommand}"/>
+                </CommandBar.PrimaryCommands>
+            </CommandBar>
+        </StackPanel>
+        <Pivot SelectionChanged="Pivot_OnSelectionChanged">
             <PivotItem Header="Template">
                 <TextBox AcceptsReturn="True" 
                          ScrollViewer.HorizontalScrollBarVisibility="Visible"
@@ -65,7 +93,7 @@
                          IsReadOnly="{x:Bind _viewModel.RenderCompleted, Mode=OneWay}"
                          PlaceholderText="Fill with your template" />
             </PivotItem>
-            <PivotItem Header="Data Structure">
+            <PivotItem Header="Data">
                 <ListView ItemsSource="{x:Bind _viewModel.Data}" ItemTemplateSelector="{StaticResource DataDataTemplateSelector}">
                     <ListView.ItemContainerStyle>
                         <Style TargetType="ListViewItem">
@@ -76,20 +104,8 @@
             </PivotItem>
         </Pivot>
     </Grid>
-    <Page.BottomAppBar>
-        <CommandBar>
-            <CommandBar.PrimaryCommands>
-                <AppBarButton HorizontalAlignment="Center" Label="Render"
-                              Command="{x:Bind _viewModel.RenderCommand}">
-                    <AppBarButton.Icon>
-                        <PathIcon HorizontalAlignment="Center"
-                                  Data="M 12,0 l -7,10 h 3 l -8,10
-                                        l 15,-12 h -4 l 9,-8
-                                        z" />
-                    </AppBarButton.Icon>
-                </AppBarButton>
-                <AppBarButton Icon="Edit" Label="Edit template" Command="{x:Bind _viewModel.EditTemplateCommand}"/>
-            </CommandBar.PrimaryCommands>
+    <!--<Page.BottomAppBar>
+        <CommandBar x:Name="DesingCommandBar">
         </CommandBar>
-    </Page.BottomAppBar>
+    </Page.BottomAppBar>-->
 </Page>

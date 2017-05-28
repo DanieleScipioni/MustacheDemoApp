@@ -22,11 +22,11 @@
 // SOFTWARE.
 // ******************************************************************************
 
+using MustacheDemo.Core;
 using System;
 using System.Collections;
 using System.Collections.Generic;
 using System.Collections.ObjectModel;
-using MustacheDemo.Core;
 
 namespace MustacheDemo.App.ViewModels
 {
@@ -42,16 +42,15 @@ namespace MustacheDemo.App.ViewModels
             Key = keyValuePair.Key;
             object value = keyValuePair.Value;
             var enumerable = value as IList;
-            Value = enumerable == null ? value.ToString() : $"[{enumerable.Count.ToString()}]";
+            Value = enumerable == null ? value.ToString() : $"[{enumerable.Count}]";
         }
     }
 
     internal class MainPageViewModel : BindableBase
     {
-        private bool _canRender;
+        #region Binding properties
 
         private string _template;
-
         public string Template
         {
             get { return _template; }
@@ -76,20 +75,32 @@ namespace MustacheDemo.App.ViewModels
             private set { SetProperty(ref _renderCompleted, value); }
         }
 
-        private Dictionary<string, object> _data;
-
         public ObservableCollection<object> Data { get; } = new ObservableCollection<object>();
 
         public readonly DelegateCommand RenderCommand;
 
         public readonly DelegateCommand EditTemplateCommand;
 
+        public readonly DelegateCommand AddDataCommand;
+
+        public readonly DelegateCommand EditDataCommand;
+
+        public readonly DelegateCommand RemoveDataCommand;
+
+        #endregion
+
         private string _templateCache;
+        private Dictionary<string, object> _data;
+        private bool _canRender;
 
         public MainPageViewModel()
         {
             RenderCommand = new DelegateCommand(Render, RenderCanExecute);
             EditTemplateCommand = new DelegateCommand(EditTemplate, EditTemplateCanExecute);
+            AddDataCommand = new DelegateCommand(AddData);
+            EditDataCommand = new DelegateCommand(EditData);
+            RemoveDataCommand = new DelegateCommand(RemoveData);
+
             _data = new Dictionary<string, object>
             {
                 {"Name", "Chris"},
@@ -102,7 +113,7 @@ namespace MustacheDemo.App.ViewModels
                 }}
             };
 
-            foreach (var item in DataToList(_data))
+            foreach (KeyValue item in DataToList(_data))
             {
                 Data.Add(item);
             }
@@ -122,6 +133,8 @@ Well, {{TaxedValue}} {{Currency}}, after taxes.
                 yield return new KeyValue(keyValuePair);
             }
         }
+
+        #region Command implementations
 
         private void Render(object parameter)
         {
@@ -152,5 +165,24 @@ Well, {{TaxedValue}} {{Currency}}, after taxes.
         {
             return RenderCompleted;
         }
+
+        private void AddData(object parameter)
+        {
+
+        }
+
+        private void RemoveData(object obj)
+        {
+            throw new NotImplementedException();
+        }
+
+        private void EditData(object obj)
+        {
+            throw new NotImplementedException();
+        }
+
+        #endregion
+
+
     }
 }

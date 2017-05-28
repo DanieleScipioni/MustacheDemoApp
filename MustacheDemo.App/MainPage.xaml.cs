@@ -22,13 +22,14 @@
 // SOFTWARE.
 // ******************************************************************************
 
+using System;
 using Windows.UI.Xaml.Controls;
+using Windows.UI.Xaml.Data;
 using MustacheDemo.App.ViewModels;
 
 namespace MustacheDemo.App
 {
     public sealed partial class MainPage
-
     {
         private readonly MainPageViewModel _viewModel;
 
@@ -36,11 +37,29 @@ namespace MustacheDemo.App
         {
             InitializeComponent();
             _viewModel = DataContext as MainPageViewModel;
+
+            HiddenElementContainer.Children.Remove(TemplateCommandBar);
+            HiddenElementContainer.Children.Remove(DataCommandBar);
         }
 
         private void TemplateTextBox_OnTextChanged(object sender, TextChangedEventArgs e)
         {
             _viewModel.Template = ((TextBox) sender).Text;
+        }
+
+        private void Pivot_OnSelectionChanged(object sender, SelectionChangedEventArgs e)
+        {
+            var pivot = (Pivot)sender;
+            switch (pivot.SelectedIndex)
+            {
+                case 0:
+                    BottomAppBar = TemplateCommandBar;
+                    break;
+                case 1:
+                    BottomAppBar = DataCommandBar;
+                    break;
+
+            }
         }
     }
 }
