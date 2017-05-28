@@ -30,8 +30,29 @@
     xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
     xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
     xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
+    xmlns:app="using:MustacheDemo.App"
+    xmlns:viewModels="using:MustacheDemo.App.ViewModels"
     mc:Ignorable="d"
     DataContext="{Binding RelativeSource={RelativeSource Self}, Converter={StaticResource ViewModelLocator}}">
+    <Page.Resources>
+        <DataTemplate x:Key="KeyValueDataTemplate" x:DataType="viewModels:KeyValue">
+            <Grid>
+                <TextBlock Grid.Column="0" Grid.Row="0"
+                    HorizontalAlignment="Left" Text="{x:Bind Key}"/>
+                <TextBlock Grid.Column="0" Grid.Row="0"
+                           HorizontalAlignment="Right" Text="{x:Bind Value}"/>
+            </Grid>
+        </DataTemplate>
+        <DataTemplate x:Key="ListDataTemplate" x:DataType="viewModels:KeyValue">
+            <StackPanel Orientation="Vertical">
+                <TextBlock Text="{x:Bind Key}"/>
+                <TextBlock Text="{x:Bind Value}"/>
+            </StackPanel>
+        </DataTemplate>
+        <app:DataDataTemplateSelector x:Key="DataDataTemplateSelector" 
+                                      KeyValyeDataTemplate="{StaticResource KeyValueDataTemplate}"
+                                      ListDataTemplate="{StaticResource ListDataTemplate}"/>
+    </Page.Resources>
 
     <Grid Background="{ThemeResource ApplicationPageBackgroundThemeBrush}">
         <Pivot BorderBrush="Green" BorderThickness="1">
@@ -45,7 +66,13 @@
                          PlaceholderText="Fill with your template" />
             </PivotItem>
             <PivotItem Header="Data Structure">
-                <TextBlock Text="Content of pivot item 2."/>
+                <ListView ItemsSource="{x:Bind _viewModel.Data}" ItemTemplateSelector="{StaticResource DataDataTemplateSelector}">
+                    <ListView.ItemContainerStyle>
+                        <Style TargetType="ListViewItem">
+                            <Setter Property="HorizontalContentAlignment" Value="Stretch"/>
+                        </Style>
+                    </ListView.ItemContainerStyle>
+                </ListView>
             </PivotItem>
         </Pivot>
     </Grid>

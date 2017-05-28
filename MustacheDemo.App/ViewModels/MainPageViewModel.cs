@@ -22,19 +22,41 @@
 // SOFTWARE.
 // ******************************************************************************
 
+using System;
+using System.Collections;
+using System.Collections.Generic;
+using System.Collections.ObjectModel;
 using MustacheDemo.Core;
 
 namespace MustacheDemo.App.ViewModels
 {
+    internal class KeyValue : BindableBase
+    {
+        private readonly KeyValuePair<string, object> _keyValuePair;
+        public string Key { get; }
+        public object Value { get; }
+
+        public KeyValue(KeyValuePair<string, object> keyValuePair)
+        {
+            _keyValuePair = keyValuePair;
+            Key = keyValuePair.Key;
+            object value = keyValuePair.Value;
+            var enumerable = value as IList;
+            Value = enumerable == null ? value.ToString() : $"[{enumerable.Count.ToString()}]";
+        }
+    }
+
     internal class MainPageViewModel : BindableBase
     {
         private bool _canRender;
 
         private string _template;
+
         public string Template
         {
             get { return _template; }
-            set {
+            set
+            {
                 if (SetProperty(ref _template, value))
                 {
                     bool templateEmpty = string.IsNullOrEmpty(_template);
@@ -54,6 +76,10 @@ namespace MustacheDemo.App.ViewModels
             private set { SetProperty(ref _renderCompleted, value); }
         }
 
+        private Dictionary<string, object> _data;
+
+        public ObservableCollection<object> Data { get; } = new ObservableCollection<object>();
+
         public readonly DelegateCommand RenderCommand;
 
         public readonly DelegateCommand EditTemplateCommand;
@@ -64,12 +90,45 @@ namespace MustacheDemo.App.ViewModels
         {
             RenderCommand = new DelegateCommand(Render, RenderCanExecute);
             EditTemplateCommand = new DelegateCommand(EditTemplate, EditTemplateCanExecute);
+            _data = new Dictionary<string, object>
+            {
+                {"Name", "Chris"},
+                {"Value", 10000},
+                {"TaxedValue", 6000},
+                {"Currency", "dollars"},
+                {"InCa", true},
+                {"List", new List<object> {
+                    "a", "b", 1
+                }}
+            };
+
+            foreach (var item in DataToList(_data))
+            {
+                Data.Add(item);
+            }
+
+            _canRender = true;
+            _template = @"Hello {{Name}}
+You have just won {{Value}} {{Currency}}!
+{{#InCa}}
+Well, {{TaxedValue}} {{Currency}}, after taxes.
+{{/InCa}}";
+        }
+
+        private static IEnumerable<KeyValue> DataToList(Dictionary<string, object> data)
+        {
+            foreach (KeyValuePair<string, object> keyValuePair in data)
+            {
+                yield return new KeyValue(keyValuePair);
+            }
         }
 
         private void Render(object parameter)
         {
+            if (Data == null) return;
+            
             _templateCache = Template;
-            Template = "{{Mustache}}";
+            Template = Mustache.Template.Compile(_templateCache.Replace("\r", Environment.NewLine)).Render(_data);
             RenderCompleted = true;
             RenderCommand.RaiseCanExecuteChanged();
             EditTemplateCommand.RaiseCanExecuteChanged();
@@ -77,7 +136,7 @@ namespace MustacheDemo.App.ViewModels
 
         private bool RenderCanExecute(object parameter)
         {
-            return !RenderCompleted;
+            return _canRender && !RenderCompleted;
         }
 
         private void EditTemplate(object parameter)
