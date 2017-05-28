@@ -7,6 +7,8 @@ Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "MustacheDemo.App", "Mustach
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "MustacheDemo.Core", "MustacheDemo.Core\MustacheDemo.Core.csproj", "{09517CC9-E27E-4B70-854B-454E263FFB63}"
 EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "MustacheDemo.Controls", "MustacheDemo.Controls\MustacheDemo.Controls.csproj", "{2B8A921A-6207-4C93-BE87-A673904CCA69}"
+EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|Any CPU = Debug|Any CPU
@@ -55,6 +57,22 @@ Global
 		{09517CC9-E27E-4B70-854B-454E263FFB63}.Release|x64.Build.0 = Release|x64
 		{09517CC9-E27E-4B70-854B-454E263FFB63}.Release|x86.ActiveCfg = Release|x86
 		{09517CC9-E27E-4B70-854B-454E263FFB63}.Release|x86.Build.0 = Release|x86
+		{2B8A921A-6207-4C93-BE87-A673904CCA69}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{2B8A921A-6207-4C93-BE87-A673904CCA69}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{2B8A921A-6207-4C93-BE87-A673904CCA69}.Debug|ARM.ActiveCfg = Debug|ARM
+		{2B8A921A-6207-4C93-BE87-A673904CCA69}.Debug|ARM.Build.0 = Debug|ARM
+		{2B8A921A-6207-4C93-BE87-A673904CCA69}.Debug|x64.ActiveCfg = Debug|x64
+		{2B8A921A-6207-4C93-BE87-A673904CCA69}.Debug|x64.Build.0 = Debug|x64
+		{2B8A921A-6207-4C93-BE87-A673904CCA69}.Debug|x86.ActiveCfg = Debug|x86
+		{2B8A921A-6207-4C93-BE87-A673904CCA69}.Debug|x86.Build.0 = Debug|x86
+		{2B8A921A-6207-4C93-BE87-A673904CCA69}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{2B8A921A-6207-4C93-BE87-A673904CCA69}.Release|Any CPU.Build.0 = Release|Any CPU
+		{2B8A921A-6207-4C93-BE87-A673904CCA69}.Release|ARM.ActiveCfg = Release|ARM
+		{2B8A921A-6207-4C93-BE87-A673904CCA69}.Release|ARM.Build.0 = Release|ARM
+		{2B8A921A-6207-4C93-BE87-A673904CCA69}.Release|x64.ActiveCfg = Release|x64
+		{2B8A921A-6207-4C93-BE87-A673904CCA69}.Release|x64.Build.0 = Release|x64
+		{2B8A921A-6207-4C93-BE87-A673904CCA69}.Release|x86.ActiveCfg = Release|x86
+		{2B8A921A-6207-4C93-BE87-A673904CCA69}.Release|x86.Build.0 = Release|x86
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE
