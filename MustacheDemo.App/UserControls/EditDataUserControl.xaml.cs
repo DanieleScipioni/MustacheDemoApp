@@ -23,25 +23,22 @@
 // ******************************************************************************
 
 using MustacheDemo.App.ViewModels;
-using System;
-using Windows.UI.Xaml.Data;
-using MustacheDemo.App.Bridges;
 
-namespace MustacheDemo.App
+namespace MustacheDemo.App.UserControls
 {
-    public class ViewModelLocator : IValueConverter
+    public sealed partial class EditDataUserControl
     {
-        public object Convert(object value, Type targetType, object parameter, string language)
-        {
-            var mainPage = value as MainPage;
-            if (mainPage != null) return new MainPageViewModel(new MainPageViewModelService());
+        private EditDataUserControlViewModel _viewModel;
 
-            return null;
-        }
-
-        public object ConvertBack(object value, Type targetType, object parameter, string language)
+        public EditDataUserControl()
         {
-            throw new NotImplementedException();
+            InitializeComponent();
+            _viewModel = DataContext as EditDataUserControlViewModel;
+            DataContextChanged += (sender, args) =>
+            {
+                _viewModel = args.NewValue as EditDataUserControlViewModel;
+                Bindings.Update();
+            };
         }
     }
 }

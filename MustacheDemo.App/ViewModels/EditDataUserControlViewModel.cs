@@ -1,4 +1,4 @@
-﻿// ******************************************************************************
+// ******************************************************************************
 // MIT License
 // 
 // Copyright (c) 2017 Daniele Scipioni
@@ -22,26 +22,36 @@
 // SOFTWARE.
 // ******************************************************************************
 
-using MustacheDemo.App.ViewModels;
 using System;
-using Windows.UI.Xaml.Data;
-using MustacheDemo.App.Bridges;
+using System.Collections.Generic;
+using MustacheDemo.Core;
 
-namespace MustacheDemo.App
+namespace MustacheDemo.App.ViewModels
 {
-    public class ViewModelLocator : IValueConverter
+    public class EditDataUserControlViewModel : BindableBase
     {
-        public object Convert(object value, Type targetType, object parameter, string language)
-        {
-            var mainPage = value as MainPage;
-            if (mainPage != null) return new MainPageViewModel(new MainPageViewModelService());
+        public string Key { get; set; }
 
-            return null;
+        public List<Type> Types { get; }
+
+        public object Value { get; set; }
+
+        public Type SelectedType { get; set; }
+
+        public EditDataUserControlViewModel()
+        {
+            Types = new List<Type>(3)
+            {
+                typeof(int),
+                typeof(decimal),
+                typeof(bool),
+                typeof(string)
+            };
         }
 
-        public object ConvertBack(object value, Type targetType, object parameter, string language)
+        public bool IsInputValid()
         {
-            throw new NotImplementedException();
+            return !string.IsNullOrEmpty(Key) && SelectedType != null;
         }
     }
 }

@@ -1,4 +1,4 @@
-﻿// ******************************************************************************
+// ******************************************************************************
 // MIT License
 // 
 // Copyright (c) 2017 Daniele Scipioni
@@ -22,26 +22,40 @@
 // SOFTWARE.
 // ******************************************************************************
 
+using MustacheDemo.App.UserControls;
 using MustacheDemo.App.ViewModels;
 using System;
-using Windows.UI.Xaml.Data;
-using MustacheDemo.App.Bridges;
+using System.Threading.Tasks;
+using Windows.UI.Xaml.Controls;
 
-namespace MustacheDemo.App
+namespace MustacheDemo.App.Bridges
 {
-    public class ViewModelLocator : IValueConverter
+    internal class MainPageViewModelService
     {
-        public object Convert(object value, Type targetType, object parameter, string language)
+        public async Task<Tuple<string, Type, object>> GetValueToAdd()
         {
-            var mainPage = value as MainPage;
-            if (mainPage != null) return new MainPageViewModel(new MainPageViewModelService());
+            var editDataUserControlViewModel = new EditDataUserControlViewModel();
+            var contentDialog = new ContentDialog
+            {
+                Content = new EditDataUserControl { DataContext = editDataUserControlViewModel },
+                PrimaryButtonText = "OK",
+                SecondaryButtonText = "Cancel",
+            };
+            contentDialog.PrimaryButtonClick += (sender, args) =>
+            {
+                if (!editDataUserControlViewModel.IsInputValid()) args.Cancel = true;
+            };
 
+            ContentDialogResult contentDialogResult = await contentDialog.ShowAsync();
+            if (contentDialogResult == ContentDialogResult.Primary)
+            {
+                return new Tuple<string, Type, object>(
+                    editDataUserControlViewModel.Key,
+                    editDataUserControlViewModel.SelectedType,
+                    editDataUserControlViewModel.Value
+                );
+            }
             return null;
-        }
-
-        public object ConvertBack(object value, Type targetType, object parameter, string language)
-        {
-            throw new NotImplementedException();
         }
     }
 }
