@@ -76,7 +76,7 @@ namespace MustacheDemo.App.Bridges
             {
                 return new Tuple<string, object>(
                     editDataUserControlViewModel.Key,
-                    editDataUserControlViewModel.RawValue
+                    editDataUserControlViewModel.Value
                 );
             }
             return null;

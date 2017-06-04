@@ -53,7 +53,7 @@ namespace MustacheDemo.App.UserControls
 
         private void TextBoxValue_OnLostFocus(object sender, RoutedEventArgs e)
         {
-            _viewModel.Value = ((TextBox)sender).Text;
+            _viewModel.StringValue = ((TextBox)sender).Text;
         }
     }
 }

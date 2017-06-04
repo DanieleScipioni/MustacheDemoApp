@@ -39,27 +39,13 @@ namespace MustacheDemo.App.ViewModels
             typeof(string)
         };
 
-        private Type _selectedType;
-
-        public object RawValue { get; private set; }
+        public object Value { get; private set; }
 
         public string Key { get; set; }
 
         public List<string> Types { get; }
 
-        private string _value;
-        public string Value
-        {
-            get { return _value; }
-            set
-            {
-                if (!SetProperty(ref _value, value)) return;
-                EvaluateValueAndType();
-            }
-        }
-
         private int _selectedTypeIndex;
-
         public int SelectedTypeIndex
         {
             get { return _selectedTypeIndex; }
@@ -67,8 +53,34 @@ namespace MustacheDemo.App.ViewModels
             {
                 if (!SetProperty(ref _selectedTypeIndex, value)) return;
 
-                _selectedType = ManagedTypes[_selectedTypeIndex];
+                ToggleSwitchVisible = ManagedTypes[_selectedTypeIndex] == typeof(bool);
                 EvaluateValueAndType();
+            }
+        }
+
+        private string _stringValue;
+        public string StringValue
+        {
+            get { return _stringValue; }
+            set
+            {
+                if (SetProperty(ref _stringValue, value))
+                {
+                    EvaluateValueAndType();
+                }
+            }
+        }
+
+        private bool _boolValue;
+        public bool BoolValue
+        {
+            get { return _boolValue; }
+            set
+            {
+                if (SetProperty(ref _boolValue, value))
+                {
+                    EvaluateValueAndType();
+                }
             }
         }
 
@@ -78,6 +90,22 @@ namespace MustacheDemo.App.ViewModels
             get { return _isValueValid; }
             private set { SetProperty(ref _isValueValid, value); }
         }
+
+        private bool _toggleSwitchVisible;
+
+        public bool ToggleSwitchVisible
+        {
+            get { return _toggleSwitchVisible; }
+            private set
+            {
+                if (SetProperty(ref _toggleSwitchVisible, value))
+                {
+                    OnPropertyChangedByName(nameof(TextBoxVisible));
+                }
+            }
+        }
+
+        public bool TextBoxVisible => !_toggleSwitchVisible;
 
         public EditDataUserControlViewModel() : this(null, null) {}
 
@@ -91,13 +119,20 @@ namespace MustacheDemo.App.ViewModels
             }
             else
             {
-                _selectedType = value.GetType();
-                _selectedTypeIndex = ManagedTypes.IndexOf(_selectedType);
+                Type selectedType = value.GetType();
+                _selectedTypeIndex = ManagedTypes.IndexOf(selectedType);
+                bool isBoolValue = selectedType == typeof(bool);
+                ToggleSwitchVisible = isBoolValue;
+                if (isBoolValue)
+                {
+                    BoolValue = (bool) value;
+                }
             }
 
-
             Key = key;
-            Value = value?.ToString();
+            Value = value;
+            StringValue = value?.ToString();
+            EvaluateValueAndType();
         }
 
         public bool IsInputValid()
@@ -107,37 +142,34 @@ namespace MustacheDemo.App.ViewModels
 
         private void EvaluateValueAndType()
         {
-            if (_selectedType == typeof(int))
+            Type selectedType = ManagedTypes[_selectedTypeIndex];
+            if (selectedType == typeof(int))
             {
                 int parsed;
-                IsValueValid = int.TryParse(_value, out parsed);
+                IsValueValid = int.TryParse(_stringValue, out parsed);
                 if (_isValueValid)
                 {
-                    RawValue = parsed;
+                    Value = parsed;
                 }
             }
-            else if (_selectedType == typeof(decimal))
+            else if (selectedType == typeof(decimal))
             {
                 decimal parsed;
-                IsValueValid = decimal.TryParse(_value, out parsed);
+                IsValueValid = decimal.TryParse(_stringValue, out parsed);
                 if (_isValueValid)
                 {
-                    RawValue = parsed;
+                    Value = parsed;
                 }
             }
-            else if (_selectedType == typeof(bool))
+            else if (selectedType == typeof(bool))
             {
-                bool parsed;
-                IsValueValid = bool.TryParse(_value, out parsed);
-                if (_isValueValid)
-                {
-                    RawValue = parsed;
-                }
+                IsValueValid = true;
+                Value = _boolValue;
             }
             else
             {
                 IsValueValid = true;
-                RawValue = _value;
+                Value = _stringValue;
             }
         }
     }

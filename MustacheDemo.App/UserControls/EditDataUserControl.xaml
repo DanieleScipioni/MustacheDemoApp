@@ -32,11 +32,13 @@
     xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
     xmlns:system="using:System"
     xmlns:userControls="using:MustacheDemo.App.UserControls"
+    xmlns:converters="using:MustacheDemo.App.Converters"
     mc:Ignorable="d"
     d:DesignHeight="300"
     d:DesignWidth="400">
     <UserControl.Resources>
         <userControls:BoolToRedBrush x:Key="BoolToRedBrush"/>
+        <converters:ValueConverter x:Key="ValueConverter"/>
     </UserControl.Resources>
     <StackPanel>
         <TextBox Text="{x:Bind _viewModel.Key, Mode=TwoWay}" PlaceholderText="Enter data key"
@@ -52,8 +54,11 @@
                 </ComboBox.ItemTemplate>
             </ComboBox>
         </StackPanel>
-        <TextBox Text="{x:Bind _viewModel.Value, Mode=TwoWay}" PlaceholderText="Enter data value"
+        <TextBox Text="{x:Bind _viewModel.StringValue, Mode=TwoWay}" PlaceholderText="Enter data value"
                  LostFocus="TextBoxValue_OnLostFocus" BorderBrush="{x:Bind _viewModel.IsValueValid, Converter={StaticResource BoolToRedBrush}, Mode=OneWay}"
-                 Margin="0,4"/>
+                 Margin="0,4" Visibility="{x:Bind _viewModel.TextBoxVisible, Mode=OneWay}"/>
+        <ToggleSwitch IsOn="{x:Bind _viewModel.BoolValue, Mode=TwoWay}"
+                      OnContent="true" OffContent="false"
+                      Visibility="{x:Bind _viewModel.ToggleSwitchVisible, Mode=OneWay}"/>
     </StackPanel>
 </UserControl>
