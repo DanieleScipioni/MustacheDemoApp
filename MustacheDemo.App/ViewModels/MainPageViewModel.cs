@@ -140,7 +140,7 @@ namespace MustacheDemo.App.ViewModels
             RenderCommand = new DelegateCommand(Render, RenderCanExecute);
             EditTemplateCommand = new DelegateCommand(EditTemplate, EditTemplateCanExecute);
             AddDataCommand = new DelegateCommand(AddData);
-            EditDataCommand = new DelegateCommand(EditData, EditDataCanExecute);
+            EditDataCommand = new DelegateCommand(EditData);
             RemoveDataCommand = new DelegateCommand(RemoveData);
 
             _data = new Dictionary<string, object>
@@ -169,6 +169,8 @@ You have just won {{Value}} {{Currency}}!
 Well, {{TaxedValue}} {{Currency}}, after taxes.
 {{/InCa}}
 {{#List}}{{.}}{{/List}}";
+
+            SelectedIndex = -1;
         }
 
         private IEnumerable<KeyValue> DataToList(Dictionary<string, object> data)
@@ -245,14 +247,6 @@ Well, {{TaxedValue}} {{Currency}}, after taxes.
                 Data.RemoveAt(selectedIndex);
                 Data.Insert(selectedIndex, new KeyValue(newTuple.Item1, newTuple.Item2, this));
             }
-        }
-
-        private bool EditDataCanExecute(object arg)
-        {
-            var keyValue = _selectedData as KeyValue;
-            if (keyValue == null) return false;
-
-            return keyValue.Value.GetType() != typeof(bool);
         }
 
         private void RemoveData(object parameter)
