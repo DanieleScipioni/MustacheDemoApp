@@ -22,41 +22,26 @@
 // SOFTWARE.
 // ******************************************************************************
 
-using MustacheDemo.App.ViewModels;
-using Windows.UI.Xaml.Controls;
+using System;
+using Windows.UI.Xaml.Data;
 
-namespace MustacheDemo.App
+namespace MustacheDemo.App.Converters
 {
-    public sealed partial class MainPage
+    class ValueConverter : IValueConverter
     {
-        private readonly MainPageViewModel _viewModel;
-
-        public MainPage()
+        public object Convert(object value, Type targetType, object parameter, string language)
         {
-            InitializeComponent();
-            _viewModel = DataContext as MainPageViewModel;
-
-            HiddenElementContainer.Children.Remove(TemplateCommandBar);
-            HiddenElementContainer.Children.Remove(DataCommandBar);
-        }
-
-        private void TemplateTextBox_OnTextChanged(object sender, TextChangedEventArgs e)
-        {
-            _viewModel.Template = ((TextBox) sender).Text;
-        }
-
-        private void Pivot_OnSelectionChanged(object sender, SelectionChangedEventArgs e)
-        {
-            var pivot = (Pivot)sender;
-            switch (pivot.SelectedIndex)
+            if (targetType == typeof(bool) || targetType == typeof(bool?))
             {
-                case 0:
-                    BottomAppBar = TemplateCommandBar;
-                    break;
-                case 1:
-                    BottomAppBar = DataCommandBar;
-                    break;
+                bool parsed;
+                return bool.TryParse(value.ToString(), out parsed) && parsed;
             }
+            return value?.ToString();
+        }
+
+        public object ConvertBack(object value, Type targetType, object parameter, string language)
+        {
+            return value;
         }
     }
 }

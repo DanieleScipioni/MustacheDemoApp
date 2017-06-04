@@ -32,25 +32,41 @@
     xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
     xmlns:app="using:MustacheDemo.App"
     xmlns:viewModels="using:MustacheDemo.App.ViewModels"
+    xmlns:converters="using:MustacheDemo.App.Converters"
     mc:Ignorable="d"
     DataContext="{Binding RelativeSource={RelativeSource Self}, Converter={StaticResource ViewModelLocator}}">
     <Page.Resources>
+        <converters:ValueConverter x:Key="ValueConverter"/>
+        
         <DataTemplate x:Key="KeyValueDataTemplate" x:DataType="viewModels:KeyValue">
             <Grid>
                 <TextBlock Grid.Column="0" Grid.Row="0"
-                    HorizontalAlignment="Left" Text="{x:Bind Key}"/>
+                           HorizontalAlignment="Left" Text="{x:Bind Key, Mode=OneWay}"/>
                 <TextBlock Grid.Column="0" Grid.Row="0"
-                           HorizontalAlignment="Right" Text="{x:Bind Value}"/>
+                           HorizontalAlignment="Right" Text="{x:Bind Value, Mode=OneWay, Converter={StaticResource ValueConverter}}"/>
             </Grid>
         </DataTemplate>
+
+        <DataTemplate x:Key="BoolDataTemplate" x:DataType="viewModels:KeyValue">
+            <Grid>
+                <TextBlock Grid.Column="0" Grid.Row="0"
+                           HorizontalAlignment="Left" VerticalAlignment="Center" Text="{x:Bind Key, Mode=OneWay}"/>
+                <ToggleSwitch Grid.Column="0" Grid.Row="0" MinWidth="20"
+                              OnContent="true" OffContent="false"
+                              HorizontalAlignment="Right" IsOn="{x:Bind Value, Converter={StaticResource ValueConverter}, Mode=TwoWay}" />
+            </Grid>
+        </DataTemplate>
+        
         <DataTemplate x:Key="ListDataTemplate" x:DataType="viewModels:KeyValue">
             <StackPanel Orientation="Vertical">
                 <TextBlock Text="{x:Bind Key}"/>
                 <TextBlock Text="{x:Bind Value}"/>
             </StackPanel>
         </DataTemplate>
+
         <app:DataDataTemplateSelector x:Key="DataDataTemplateSelector" 
                                       KeyValyeDataTemplate="{StaticResource KeyValueDataTemplate}"
+                                      BoolDataTemplate="{StaticResource BoolDataTemplate}"
                                       ListDataTemplate="{StaticResource ListDataTemplate}"/>
     </Page.Resources>
 
@@ -58,7 +74,7 @@
         <!-- 
         This StackPanel is used only to define command bars,
         after page initialization all children are removed from it and the
-        command bars are set to Page.BottomAppBar with a event handler
+        command bars are set to Page.BottomAppBar with Pivot_OnSelectionChanged event handler
         -->
         <StackPanel x:Name="HiddenElementContainer" Visibility="Collapsed">
             <CommandBar x:Name="TemplateCommandBar">
@@ -77,8 +93,8 @@
             </CommandBar>
             <CommandBar x:Name="DataCommandBar">
                 <CommandBar.PrimaryCommands>
-                    <AppBarButton Icon="Delete" Label="Add data" Command="{x:Bind _viewModel.AddDataCommand}"/>
-                    <AppBarButton Icon="Edit" Label="Add data" Command="{x:Bind _viewModel.AddDataCommand}"/>
+                    <AppBarButton Icon="Delete" Label="Add data" Command="{x:Bind _viewModel.RemoveDataCommand}"/>
+                    <AppBarButton Icon="Edit" Label="Add data" Command="{x:Bind _viewModel.EditDataCommand}"/>
                     <AppBarButton Icon="Add" Label="Add data" Command="{x:Bind _viewModel.AddDataCommand}"/>
                 </CommandBar.PrimaryCommands>
             </CommandBar>
@@ -94,7 +110,9 @@
                          PlaceholderText="Fill with your template" />
             </PivotItem>
             <PivotItem Header="Data">
-                <ListView ItemsSource="{x:Bind _viewModel.Data}" ItemTemplateSelector="{StaticResource DataDataTemplateSelector}">
+                <ListView ItemsSource="{x:Bind _viewModel.Data}" ItemTemplateSelector="{StaticResource DataDataTemplateSelector}"
+                          SelectedItem="{x:Bind _viewModel.SelectedData, Mode=TwoWay}"
+                          SelectedIndex="{x:Bind _viewModel.SelectedIndex, Mode=TwoWay}">
                     <ListView.ItemContainerStyle>
                         <Style TargetType="ListViewItem">
                             <Setter Property="HorizontalContentAlignment" Value="Stretch"/>

@@ -22,6 +22,8 @@
 // SOFTWARE.
 // ******************************************************************************
 
+using Windows.UI.Xaml;
+using Windows.UI.Xaml.Controls;
 using MustacheDemo.App.ViewModels;
 
 namespace MustacheDemo.App.UserControls
@@ -36,9 +38,22 @@ namespace MustacheDemo.App.UserControls
             _viewModel = DataContext as EditDataUserControlViewModel;
             DataContextChanged += (sender, args) =>
             {
+                if (_viewModel == args.NewValue) return;
+                
                 _viewModel = args.NewValue as EditDataUserControlViewModel;
                 Bindings.Update();
+                args.Handled = true;
             };
+        }
+
+        private void TextBoxKey_OnLostFocus(object sender, RoutedEventArgs e)
+        {
+            _viewModel.Key = ((TextBox) sender).Text;
+        }
+
+        private void TextBoxValue_OnLostFocus(object sender, RoutedEventArgs e)
+        {
+            _viewModel.Value = ((TextBox)sender).Text;
         }
     }
 }

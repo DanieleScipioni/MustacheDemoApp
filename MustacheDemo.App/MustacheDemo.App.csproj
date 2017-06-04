@@ -96,7 +96,9 @@
     <Compile Include="App.xaml.cs">
       <DependentUpon>App.xaml</DependentUpon>
     </Compile>
+    <Compile Include="Converters\ValueConverter.cs" />
     <Compile Include="DataDataTemplateSelector.cs" />
+    <Compile Include="UserControls\BoolToRedBrush.cs" />
     <Compile Include="UserControls\EditDataUserControl.xaml.cs">
       <DependentUpon>EditDataUserControl.xaml</DependentUpon>
     </Compile>

@@ -32,7 +32,7 @@ namespace MustacheDemo.App.Bridges
 {
     internal class MainPageViewModelService
     {
-        public async Task<Tuple<string, Type, object>> GetValueToAdd()
+        public async Task<Tuple<string, object>> NewData()
         {
             var editDataUserControlViewModel = new EditDataUserControlViewModel();
             var contentDialog = new ContentDialog
@@ -49,10 +49,34 @@ namespace MustacheDemo.App.Bridges
             ContentDialogResult contentDialogResult = await contentDialog.ShowAsync();
             if (contentDialogResult == ContentDialogResult.Primary)
             {
-                return new Tuple<string, Type, object>(
+                return new Tuple<string, object>(
                     editDataUserControlViewModel.Key,
-                    editDataUserControlViewModel.SelectedType,
                     editDataUserControlViewModel.Value
+                );
+            }
+            return null;
+        }
+
+        public async Task<Tuple<string, object>> EditData(Tuple<string, object> tuple)
+        {
+            var editDataUserControlViewModel = new EditDataUserControlViewModel(tuple.Item1, tuple.Item2);
+            var contentDialog = new ContentDialog
+            {
+                Content = new EditDataUserControl { DataContext = editDataUserControlViewModel },
+                PrimaryButtonText = "OK",
+                SecondaryButtonText = "Cancel",
+            };
+            contentDialog.PrimaryButtonClick += (sender, args) =>
+            {
+                if (!editDataUserControlViewModel.IsInputValid()) args.Cancel = true;
+            };
+
+            ContentDialogResult contentDialogResult = await contentDialog.ShowAsync();
+            if (contentDialogResult == ContentDialogResult.Primary)
+            {
+                return new Tuple<string, object>(
+                    editDataUserControlViewModel.Key,
+                    editDataUserControlViewModel.RawValue
                 );
             }
             return null;

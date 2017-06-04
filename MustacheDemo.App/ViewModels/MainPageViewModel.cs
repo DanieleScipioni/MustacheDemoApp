@@ -22,6 +22,7 @@
 // SOFTWARE.
 // ******************************************************************************
 
+using MustacheDemo.App.Bridges;
 using MustacheDemo.Core;
 using System;
 using System.Collections;
@@ -30,23 +31,45 @@ using System.Collections.ObjectModel;
 
 namespace MustacheDemo.App.ViewModels
 {
+    internal interface IKeyValueDataService
+    {
+        void UpdateDataValue(string key, object value);
+    }
+
     internal class KeyValue : BindableBase
     {
-        private readonly KeyValuePair<string, object> _keyValuePair;
-        public string Key { get; }
-        public object Value { get; }
+        private string _key;
+        private readonly IKeyValueDataService _keyValueDataService;
+        private object _value;
 
-        public KeyValue(KeyValuePair<string, object> keyValuePair)
+        public string Key
         {
-            _keyValuePair = keyValuePair;
-            Key = keyValuePair.Key;
-            object value = keyValuePair.Value;
+            get { return _key; }
+            set { SetProperty(ref _key, value); }
+        }
+
+        public object Value
+        {
+            get { return _value; }
+            set
+            {
+                if (SetProperty(ref _value, value))
+                {
+                    _keyValueDataService.UpdateDataValue(_key, _value);
+                }
+            }
+        }
+
+        public KeyValue(string key, object value, IKeyValueDataService keyValueDataService)
+        {
+            _key = key;
+            _keyValueDataService = keyValueDataService;
             var enumerable = value as IList;
-            Value = enumerable == null ? value.ToString() : $"[{enumerable.Count}]";
+            _value = enumerable == null ? value : $"[{enumerable.Count}]";
         }
     }
 
-    internal class MainPageViewModel : BindableBase
+    internal class MainPageViewModel : BindableBase, IKeyValueDataService
     {
         #region Binding properties
 
@@ -77,6 +100,21 @@ namespace MustacheDemo.App.ViewModels
 
         public ObservableCollection<object> Data { get; } = new ObservableCollection<object>();
 
+        private object _selectedData;
+        public object SelectedData
+        {
+            get { return _selectedData; }
+            set
+            {
+                if (SetProperty(ref _selectedData, value))
+                {
+                    EditDataCommand.RaiseCanExecuteChanged();
+                }
+            }
+        }
+
+        public int SelectedIndex { get; set; }
+
         public readonly DelegateCommand RenderCommand;
 
         public readonly DelegateCommand EditTemplateCommand;
@@ -89,16 +127,20 @@ namespace MustacheDemo.App.ViewModels
 
         #endregion
 
-        private string _templateCache;
         private Dictionary<string, object> _data;
-        private bool _canRender;
 
-        public MainPageViewModel()
+        private string _templateCache;
+        private Dictionary<string, object> currentObject;
+        private bool _canRender;
+        private readonly MainPageViewModelService _mainPageViewModelService;
+
+        public MainPageViewModel(MainPageViewModelService mainPageViewModelService)
         {
+            _mainPageViewModelService = mainPageViewModelService;
             RenderCommand = new DelegateCommand(Render, RenderCanExecute);
             EditTemplateCommand = new DelegateCommand(EditTemplate, EditTemplateCanExecute);
             AddDataCommand = new DelegateCommand(AddData);
-            EditDataCommand = new DelegateCommand(EditData);
+            EditDataCommand = new DelegateCommand(EditData, EditDataCanExecute);
             RemoveDataCommand = new DelegateCommand(RemoveData);
 
             _data = new Dictionary<string, object>
@@ -113,7 +155,9 @@ namespace MustacheDemo.App.ViewModels
                 }}
             };
 
-            foreach (KeyValue item in DataToList(_data))
+            currentObject = _data;
+
+            foreach (KeyValue item in DataToList(currentObject))
             {
                 Data.Add(item);
             }
@@ -123,14 +167,15 @@ namespace MustacheDemo.App.ViewModels
 You have just won {{Value}} {{Currency}}!
 {{#InCa}}
 Well, {{TaxedValue}} {{Currency}}, after taxes.
-{{/InCa}}";
+{{/InCa}}
+{{#List}}{{.}}{{/List}}";
         }
 
-        private static IEnumerable<KeyValue> DataToList(Dictionary<string, object> data)
+        private IEnumerable<KeyValue> DataToList(Dictionary<string, object> data)
         {
             foreach (KeyValuePair<string, object> keyValuePair in data)
             {
-                yield return new KeyValue(keyValuePair);
+                yield return new KeyValue(keyValuePair.Key, keyValuePair.Value, this);
             }
         }
 
@@ -166,23 +211,69 @@ Well, {{TaxedValue}} {{Currency}}, after taxes.
             return RenderCompleted;
         }
 
-        private void AddData(object parameter)
+        private async void AddData(object parameter)
         {
+            Tuple<string, object> tuple = await _mainPageViewModelService.NewData();
+            if (tuple == null) return;
 
+            Data.Add(new KeyValue(tuple.Item1, tuple.Item2, this));
+
+            currentObject.Add(tuple.Item1, tuple.Item2);
         }
 
-        private void RemoveData(object obj)
+        private async void EditData(object parameter)
         {
-            throw new NotImplementedException();
+            var keyValue = SelectedData as KeyValue;
+            if (keyValue == null) return;
+
+            var tuple = new Tuple<string, object>(keyValue.Key, keyValue.Value);
+            Tuple<string, object> newTuple = await _mainPageViewModelService.EditData(tuple);
+            if (newTuple == null) return;
+
+            if (tuple.Item1 != newTuple.Item1) currentObject.Remove(tuple.Item1);
+            
+            currentObject[newTuple.Item1] = newTuple.Item2;
+
+            if (newTuple.Item2.GetType() == tuple.Item2.GetType())
+            {
+                keyValue.Key = newTuple.Item1;
+                keyValue.Value = newTuple.Item2;
+            }
+            else
+            {
+                int selectedIndex = SelectedIndex;
+                Data.RemoveAt(selectedIndex);
+                Data.Insert(selectedIndex, new KeyValue(newTuple.Item1, newTuple.Item2, this));
+            }
         }
 
-        private void EditData(object obj)
+        private bool EditDataCanExecute(object arg)
         {
-            throw new NotImplementedException();
+            var keyValue = _selectedData as KeyValue;
+            if (keyValue == null) return false;
+
+            return keyValue.Value.GetType() != typeof(bool);
+        }
+
+        private void RemoveData(object parameter)
+        {
+            var keyValue = SelectedData as KeyValue;
+            if (keyValue == null) return;
+
+            Data.RemoveAt(SelectedIndex);
+
+            currentObject.Remove(keyValue.Key);
         }
 
         #endregion
 
+        #region IKeyValueDataService
 
+        public void UpdateDataValue(string key, object value)
+        {
+            currentObject[key] = value;
+        }
+
+        #endregion
     }
 }

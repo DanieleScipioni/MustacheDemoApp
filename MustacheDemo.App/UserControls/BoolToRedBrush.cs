@@ -22,41 +22,26 @@
 // SOFTWARE.
 // ******************************************************************************
 
-using MustacheDemo.App.ViewModels;
-using Windows.UI.Xaml.Controls;
+using System;
+using Windows.UI;
+using Windows.UI.Xaml.Data;
+using Windows.UI.Xaml.Media;
 
-namespace MustacheDemo.App
+namespace MustacheDemo.App.UserControls
 {
-    public sealed partial class MainPage
+    class BoolToRedBrush : IValueConverter
     {
-        private readonly MainPageViewModel _viewModel;
-
-        public MainPage()
+        public object Convert(object value, Type targetType, object parameter, string language)
         {
-            InitializeComponent();
-            _viewModel = DataContext as MainPageViewModel;
+            if (targetType != typeof(Brush) || value.GetType() != typeof(bool)) return null;
 
-            HiddenElementContainer.Children.Remove(TemplateCommandBar);
-            HiddenElementContainer.Children.Remove(DataCommandBar);
+            object currentBrush = Windows.UI.Xaml.Application.Current.Resources["TextControlBorderBrush"] as Brush;
+            return (bool) value ? currentBrush : new SolidColorBrush(Colors.Red);
         }
 
-        private void TemplateTextBox_OnTextChanged(object sender, TextChangedEventArgs e)
+        public object ConvertBack(object value, Type targetType, object parameter, string language)
         {
-            _viewModel.Template = ((TextBox) sender).Text;
-        }
-
-        private void Pivot_OnSelectionChanged(object sender, SelectionChangedEventArgs e)
-        {
-            var pivot = (Pivot)sender;
-            switch (pivot.SelectedIndex)
-            {
-                case 0:
-                    BottomAppBar = TemplateCommandBar;
-                    break;
-                case 1:
-                    BottomAppBar = DataCommandBar;
-                    break;
-            }
+            throw new NotImplementedException();
         }
     }
 }

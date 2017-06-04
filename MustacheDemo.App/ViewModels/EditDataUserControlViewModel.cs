@@ -22,36 +22,123 @@
 // SOFTWARE.
 // ******************************************************************************
 
+using MustacheDemo.Core;
 using System;
 using System.Collections.Generic;
-using MustacheDemo.Core;
+using System.Linq;
 
 namespace MustacheDemo.App.ViewModels
 {
     public class EditDataUserControlViewModel : BindableBase
     {
+        private static readonly List<Type> ManagedTypes = new List<Type>(4)
+        {
+            typeof(int),
+            typeof(decimal),
+            typeof(bool),
+            typeof(string)
+        };
+
+        private Type _selectedType;
+
+        public object RawValue { get; private set; }
+
         public string Key { get; set; }
 
-        public List<Type> Types { get; }
+        public List<string> Types { get; }
 
-        public object Value { get; set; }
-
-        public Type SelectedType { get; set; }
-
-        public EditDataUserControlViewModel()
+        private string _value;
+        public string Value
         {
-            Types = new List<Type>(3)
+            get { return _value; }
+            set
             {
-                typeof(int),
-                typeof(decimal),
-                typeof(bool),
-                typeof(string)
-            };
+                if (!SetProperty(ref _value, value)) return;
+                EvaluateValueAndType();
+            }
+        }
+
+        private int _selectedTypeIndex;
+
+        public int SelectedTypeIndex
+        {
+            get { return _selectedTypeIndex; }
+            set
+            {
+                if (!SetProperty(ref _selectedTypeIndex, value)) return;
+
+                _selectedType = ManagedTypes[_selectedTypeIndex];
+                EvaluateValueAndType();
+            }
+        }
+
+        private bool _isValueValid;
+        public bool IsValueValid
+        {
+            get { return _isValueValid; }
+            private set { SetProperty(ref _isValueValid, value); }
+        }
+
+        public EditDataUserControlViewModel() : this(null, null) {}
+
+        public EditDataUserControlViewModel(string key, object value)
+        {
+            Types = (from type in ManagedTypes select type.Name).ToList();
+
+            if (value == null)
+            {
+                _selectedTypeIndex = -1;
+            }
+            else
+            {
+                _selectedType = value.GetType();
+                _selectedTypeIndex = ManagedTypes.IndexOf(_selectedType);
+            }
+
+
+            Key = key;
+            Value = value?.ToString();
         }
 
         public bool IsInputValid()
         {
-            return !string.IsNullOrEmpty(Key) && SelectedType != null;
+            return !string.IsNullOrEmpty(Key) && SelectedTypeIndex != -1 && _isValueValid;
+        }
+
+        private void EvaluateValueAndType()
+        {
+            if (_selectedType == typeof(int))
+            {
+                int parsed;
+                IsValueValid = int.TryParse(_value, out parsed);
+                if (_isValueValid)
+                {
+                    RawValue = parsed;
+                }
+            }
+            else if (_selectedType == typeof(decimal))
+            {
+                decimal parsed;
+                IsValueValid = decimal.TryParse(_value, out parsed);
+                if (_isValueValid)
+                {
+                    RawValue = parsed;
+                }
+            }
+            else if (_selectedType == typeof(bool))
+            {
+                bool parsed;
+                IsValueValid = bool.TryParse(_value, out parsed);
+                if (_isValueValid)
+                {
+                    RawValue = parsed;
+                }
+            }
+            else
+            {
+                IsValueValid = true;
+                RawValue = _value;
+            }
         }
     }
 }

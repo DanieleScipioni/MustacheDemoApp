@@ -32,6 +32,8 @@ namespace MustacheDemo.App
     {
         public DataTemplate KeyValyeDataTemplate { get; set; }
 
+        public DataTemplate BoolDataTemplate { get; set; }
+
         public DataTemplate ListDataTemplate { get; set; }
 
         protected override DataTemplate SelectTemplateCore(object item, DependencyObject container)
@@ -39,6 +41,7 @@ namespace MustacheDemo.App
             var keyValue = item as KeyValue;
             if (keyValue == null) return base.SelectTemplateCore(item, container);
 
+            if (keyValue.Value is bool) return BoolDataTemplate;
 
             return KeyValyeDataTemplate;
         }
