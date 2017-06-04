@@ -32,13 +32,11 @@
     xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
     xmlns:system="using:System"
     xmlns:userControls="using:MustacheDemo.App.UserControls"
-    xmlns:converters="using:MustacheDemo.App.Converters"
     mc:Ignorable="d"
     d:DesignHeight="300"
     d:DesignWidth="400">
     <UserControl.Resources>
         <userControls:BoolToRedBrush x:Key="BoolToRedBrush"/>
-        <converters:ValueConverter x:Key="ValueConverter"/>
     </UserControl.Resources>
     <StackPanel>
         <TextBox Text="{x:Bind _viewModel.Key, Mode=TwoWay}" PlaceholderText="Enter data key"

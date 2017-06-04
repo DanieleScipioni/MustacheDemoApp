@@ -131,6 +131,7 @@ namespace MustacheDemo.App.ViewModels
                 StringValue = value.ToString();
                 EvaluateValueAndType();
             }
+            Key = key;
         }
 
         public bool IsInputValid()
