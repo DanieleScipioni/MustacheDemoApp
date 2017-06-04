@@ -127,12 +127,10 @@ namespace MustacheDemo.App.ViewModels
                 {
                     BoolValue = (bool) value;
                 }
+                Value = value;
+                StringValue = value.ToString();
+                EvaluateValueAndType();
             }
-
-            Key = key;
-            Value = value;
-            StringValue = value?.ToString();
-            EvaluateValueAndType();
         }
 
         public bool IsInputValid()
