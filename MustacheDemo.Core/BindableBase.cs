@@ -55,7 +55,7 @@ namespace MustacheDemo.Core
             PropertyChanged?.Invoke(this, new PropertyChangedEventArgs(propertyName));
         }
 
-        private void OnPropertyChangedByName(string propertyName)
+        protected void OnPropertyChangedByName(string propertyName)
         {
             PropertyChanged?.Invoke(this, new PropertyChangedEventArgs(propertyName));
         }
