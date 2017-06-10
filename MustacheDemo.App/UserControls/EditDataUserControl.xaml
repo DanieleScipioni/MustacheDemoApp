@@ -32,16 +32,20 @@
     xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
     xmlns:system="using:System"
     xmlns:userControls="using:MustacheDemo.App.UserControls"
+    xmlns:converters="using:MustacheDemo.App.Converters"
     mc:Ignorable="d"
     d:DesignHeight="300"
     d:DesignWidth="400">
     <UserControl.Resources>
         <userControls:BoolToRedBrush x:Key="BoolToRedBrush"/>
+        <converters:NegateBooleanConverter x:Key="NegateBooleanConverter"/>
     </UserControl.Resources>
     <StackPanel>
+                 <!--IsReadOnly="{x:Bind _viewModel.KeyReadOnly}"--> 
         <TextBox Text="{x:Bind _viewModel.Key, Mode=TwoWay}" PlaceholderText="Enter data key"
                  LostFocus="TextBoxKey_OnLostFocus"
-                 Margin="0,4"/>
+                 IsEnabled="{x:Bind _viewModel.KeyReadOnly, Converter={StaticResource NegateBooleanConverter}}"
+                 Margin="0,4" />
         <StackPanel Orientation="Horizontal" Margin="0,4">
             <TextBlock Text="Type" Margin="4,0" VerticalAlignment="Center" />
             <ComboBox ItemsSource="{x:Bind _viewModel.Types}" SelectedIndex="{x:Bind _viewModel.SelectedTypeIndex, Mode=TwoWay}">

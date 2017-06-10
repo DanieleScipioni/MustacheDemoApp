@@ -244,10 +244,13 @@ Well, {{TaxedValue}} {{Currency}}, after taxes.
                 return;
             }
 
-            var tuple = new Tuple<string, object>(contextEntry.Key, contextEntry.Value);
-            Tuple<string, object> newTuple = await _mainPageViewModelService.EditData(tuple);
-            if (newTuple == null) return;
+            object currentContext = _dataStack.Peek();
+            var dictionary = currentContext as IDictionary<string, object>;
+            var listContext = currentContext as IList<object>;
 
+            var tuple = new Tuple<string, object>(contextEntry.Key, contextEntry.Value);
+            Tuple<string, object> newTuple = await _mainPageViewModelService.EditData(tuple, listContext != null);
+            if (newTuple == null) return;
 
             if (newTuple.Item2.GetType() == tuple.Item2.GetType())
             {
@@ -261,32 +264,29 @@ Well, {{TaxedValue}} {{Currency}}, after taxes.
                 Data.Insert(index, new ContextEntry(newTuple.Item1, newTuple.Item2, this));
             }
 
-            object currentContext = _dataStack.Peek();
 
-            var dictionary = currentContext as IDictionary<string, object>;
             if (dictionary != null)
             {
-                SetDictionaryData(dictionary, contextEntry, tuple, newTuple);
+                SetDictionaryData(dictionary, tuple, newTuple);
             }
 
-            var listContext = currentContext as IList<object>;
             if (listContext == null) return;
+
+            SetListData(listContext, tuple, newTuple);
         }
 
-        private void SetDictionaryData(IDictionary<string, object> dictionary, ContextEntry contextEntry,
+        private static void SetDictionaryData(IDictionary<string, object> dictionary,
             Tuple<string, object> tuple, Tuple<string, object> newTuple)
         {
             if (tuple.Item1 != newTuple.Item1) dictionary.Remove(tuple.Item1);
-
             dictionary[newTuple.Item1] = newTuple.Item2;
-
-
         }
 
-        private void SetListData(IList<object> list, ContextEntry contextEntry,
+        private static void SetListData(IList<object> list,
             Tuple<string, object> tuple, Tuple<string, object> newTuple)
         {
-            
+            int index = list.IndexOf(tuple.Item2);
+            list[index] = newTuple.Item2;
         }
 
         #endregion

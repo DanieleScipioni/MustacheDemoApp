@@ -45,6 +45,8 @@ namespace MustacheDemo.App.ViewModels
 
         public string Key { get; set; }
 
+        public bool KeyReadOnly { get; }
+
         public List<string> Types { get; }
 
         private int _selectedTypeIndex;
@@ -109,12 +111,12 @@ namespace MustacheDemo.App.ViewModels
 
         public bool TextBoxVisible => !_toggleSwitchVisible;
 
-        public EditDataUserControlViewModel() : this(null, null) {}
+        public EditDataUserControlViewModel() : this(null, null, true) {}
 
-        public EditDataUserControlViewModel(string key, object value)
+        public EditDataUserControlViewModel(string key, object value, bool canEditKey)
         {
             Types = (from type in ManagedTypes select type.Name).ToList();
-
+            KeyReadOnly = canEditKey;
             if (value == null)
             {
                 _selectedTypeIndex = -1;
@@ -123,12 +125,13 @@ namespace MustacheDemo.App.ViewModels
             {
                 Type selectedType = value.GetType();
                 _selectedTypeIndex = ManagedTypes.IndexOf(selectedType);
-                bool isBoolValue = selectedType == typeof(bool);
-                ToggleSwitchVisible = isBoolValue;
-                if (isBoolValue)
+
+                ToggleSwitchVisible = selectedType == typeof(bool);
+                if (ToggleSwitchVisible)
                 {
                     _boolValue = (bool) value;
                 }
+
                 Value = value;
                 _stringValue = value.ToString();
                 EvaluateValueAndType();

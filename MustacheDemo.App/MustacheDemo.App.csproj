@@ -96,6 +96,8 @@
     <Compile Include="App.xaml.cs">
       <DependentUpon>App.xaml</DependentUpon>
     </Compile>
+    <Compile Include="Converters\NegateBooleanConverter.cs" />
+    <Compile Include="Converters\BooleanToInvisibilityConverter.cs" />
     <Compile Include="Converters\ValueConverter.cs" />
     <Compile Include="DataDataTemplateSelector.cs" />
     <Compile Include="UserControls\BoolToRedBrush.cs" />

@@ -57,9 +57,9 @@ namespace MustacheDemo.App.Bridges
             return null;
         }
 
-        public async Task<Tuple<string, object>> EditData(Tuple<string, object> tuple)
+        public async Task<Tuple<string, object>> EditData(Tuple<string, object> tuple, bool canEditKey)
         {
-            var editDataUserControlViewModel = new EditDataUserControlViewModel(tuple.Item1, tuple.Item2);
+            var editDataUserControlViewModel = new EditDataUserControlViewModel(tuple.Item1, tuple.Item2, canEditKey);
             var contentDialog = new ContentDialog
             {
                 Content = new EditDataUserControl { DataContext = editDataUserControlViewModel },
