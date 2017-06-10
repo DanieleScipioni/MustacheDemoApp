@@ -32,13 +32,13 @@ using System.Linq;
 
 namespace MustacheDemo.App.ViewModels
 {
-    internal interface IKeyValueDataService
+    internal interface IContextEntryDataService
     {
         void UpdateDataValue(string key, object value);
-        void EditKeyValue(ContextEntry contextEntry);
+        void EditContextEntry(ContextEntry contextEntry);
     }
 
-    internal class MainPageViewModel : BindableBase, IKeyValueDataService
+    internal class MainPageViewModel : BindableBase, IContextEntryDataService
     {
         #region Propery backing fields
 
@@ -197,7 +197,7 @@ Well, {{TaxedValue}} {{Currency}}, after taxes.
             var keyValue = SelectedData as ContextEntry;
             if (keyValue == null) return;
 
-            EditKeyValue(keyValue);
+            EditContextEntry(keyValue);
         }
 
         private void RemoveData(object parameter)
@@ -225,7 +225,7 @@ Well, {{TaxedValue}} {{Currency}}, after taxes.
 
         #endregion
 
-        #region IKeyValueDataService
+        #region IContextEntryDataService
 
         public void UpdateDataValue(string key, object value)
         {
@@ -235,7 +235,7 @@ Well, {{TaxedValue}} {{Currency}}, after taxes.
             dictionary[key] = value;
         }
 
-        public async void EditKeyValue(ContextEntry contextEntry)
+        public async void EditContextEntry(ContextEntry contextEntry)
         {
             var list = contextEntry.Value as IList<object>;
             if (list != null)

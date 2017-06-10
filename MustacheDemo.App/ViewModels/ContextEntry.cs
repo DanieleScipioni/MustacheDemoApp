@@ -30,7 +30,7 @@ namespace MustacheDemo.App.ViewModels
     {
         private string _key;
         private object _value;
-        private readonly IKeyValueDataService _keyValueDataService;
+        private readonly IContextEntryDataService _contextEntryDataService;
 
         public string Key
         {
@@ -45,24 +45,24 @@ namespace MustacheDemo.App.ViewModels
             {
                 if (SetProperty(ref _value, value))
                 {
-                    _keyValueDataService.UpdateDataValue(_key, _value);
+                    _contextEntryDataService.UpdateDataValue(_key, _value);
                 }
             }
         }
 
         public readonly DelegateCommand EditCommand;
 
-        public ContextEntry(string key, object value, IKeyValueDataService keyValueDataService)
+        public ContextEntry(string key, object value, IContextEntryDataService contextEntryDataService)
         {
             _key = key;
             _value = value;
-            _keyValueDataService = keyValueDataService;
+            _contextEntryDataService = contextEntryDataService;
             EditCommand = new DelegateCommand(EditCommandImpl);
         }
 
         private void EditCommandImpl(object parameter)
         {
-            _keyValueDataService.EditKeyValue(this);
+            _contextEntryDataService.EditContextEntry(this);
         }
     }
 }

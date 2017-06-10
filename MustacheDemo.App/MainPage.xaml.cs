@@ -70,7 +70,7 @@ namespace MustacheDemo.App
 
             e.Handled = true;
 
-            _viewModel.EditKeyValue(keyValue);
+            _viewModel.EditContextEntry(keyValue);
         }
     }
 }
