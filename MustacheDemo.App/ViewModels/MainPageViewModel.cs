@@ -44,7 +44,6 @@ namespace MustacheDemo.App.ViewModels
 
         private string _template;
         private bool _renderCompleted;
-        private object _selectedData;
 
         #endregion
 
@@ -74,18 +73,6 @@ namespace MustacheDemo.App.ViewModels
         }
 
         public ObservableCollection<object> Data { get; } = new ObservableCollection<object>();
-
-        public object SelectedData
-        {
-            get { return _selectedData; }
-            set
-            {
-                if (SetProperty(ref _selectedData, value))
-                {
-                    EditSelectedDataCommand.RaiseCanExecuteChanged();
-                }
-            }
-        }
 
         public int SelectedIndex { get; set; }
 
@@ -194,7 +181,7 @@ Well, {{TaxedValue}} {{Currency}}, after taxes.
 
         private void EditSelectedData(object parameter)
         {
-            var keyValue = SelectedData as ContextEntry;
+            var keyValue = Data[SelectedIndex] as ContextEntry;
             if (keyValue == null) return;
 
             EditContextEntry(keyValue);
@@ -202,7 +189,7 @@ Well, {{TaxedValue}} {{Currency}}, after taxes.
 
         private void RemoveData(object parameter)
         {
-            var keyValue = SelectedData as ContextEntry;
+            var keyValue = Data[SelectedIndex] as ContextEntry;
             if (keyValue == null) return;
 
             var dictionary = _dataStack.Peek() as IDictionary;
