@@ -28,9 +28,9 @@ namespace MustacheDemo.App.ViewModels
 {
     internal class KeyValue : BindableBase
     {
-        protected string _key;
-        protected object _value;
-        protected readonly IKeyValueDataService _keyValueDataService;
+        private string _key;
+        private object _value;
+        private readonly IKeyValueDataService _keyValueDataService;
 
         public string Key
         {
@@ -50,11 +50,19 @@ namespace MustacheDemo.App.ViewModels
             }
         }
 
+        public readonly DelegateCommand EditCommand;
+
         public KeyValue(string key, object value, IKeyValueDataService keyValueDataService)
         {
             _key = key;
             _value = value;
             _keyValueDataService = keyValueDataService;
+            EditCommand = new DelegateCommand(EditCommandImpl);
+        }
+
+        private void EditCommandImpl(object parameter)
+        {
+            _keyValueDataService.EditKeyValue(this);
         }
     }
 }

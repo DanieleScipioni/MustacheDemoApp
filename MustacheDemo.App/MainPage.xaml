@@ -37,22 +37,30 @@
     DataContext="{Binding RelativeSource={RelativeSource Self}, Converter={StaticResource ViewModelLocator}}">
     <Page.Resources>
         <converters:ValueConverter x:Key="ValueConverter"/>
-        
+
         <GridLength x:Key="GridLength">62</GridLength>
-        
+
+        <Style x:Key="LocalTextBlockButtonStyle" TargetType="Button" BasedOn="{StaticResource TextBlockButtonStyle}">
+            <Setter Property="HorizontalAlignment" Value="Center"/>
+            <Setter Property="Margin" Value="0,0,12,0"/>
+        </Style>
+
         <DataTemplate x:Key="StringDataTemplate" x:DataType="viewModels:KeyValue">
             <Grid>
                 <Grid.ColumnDefinitions>
                     <ColumnDefinition Width="{StaticResource GridLength}"/>
                     <ColumnDefinition Width="*"/>
                 </Grid.ColumnDefinitions>
-                <TextBlock Grid.Column="0" Grid.Row="0" Text="Abc" 
-                           HorizontalAlignment="Center" Margin="0,0,12,0"
-                           Foreground="{ThemeResource SystemControlForegroundAccentBrush}"/>
+                <Button Grid.Column="0" Grid.Row="0"
+                        Style="{StaticResource LocalTextBlockButtonStyle}"
+                        Command="{x:Bind EditCommand}">
+                    <TextBlock Text="Abc"/>
+                </Button>
                 <TextBlock Grid.Column="1" Grid.Row="0" Margin="12,0,0,0"
-                           HorizontalAlignment="Left" Text="{x:Bind Key, Mode=OneWay}"/>
+                           HorizontalAlignment="Left" VerticalAlignment="Center" Text="{x:Bind Key, Mode=OneWay}"/>
                 <TextBlock Grid.Column="1" Grid.Row="0"
-                           HorizontalAlignment="Right" Text="{x:Bind Value, Mode=OneWay, Converter={StaticResource ValueConverter}}"/>
+                           HorizontalAlignment="Right" VerticalAlignment="Center"
+                           Text="{x:Bind Value, Mode=OneWay, Converter={StaticResource ValueConverter}}"/>
             </Grid>
         </DataTemplate>
 
@@ -62,13 +70,16 @@
                     <ColumnDefinition Width="{StaticResource GridLength}"/>
                     <ColumnDefinition Width="*"/>
                 </Grid.ColumnDefinitions>
-                <TextBlock Grid.Column="0" Grid.Row="0" Text="#.##" 
-                           HorizontalAlignment="Center" Margin="0,0,12,0"
-                           Foreground="{ThemeResource SystemControlForegroundAccentBrush}"/>
+                <Button Grid.Column="0" Grid.Row="0"
+                        Style="{StaticResource LocalTextBlockButtonStyle}"
+                        Command="{x:Bind EditCommand}">
+                    <TextBlock Text="#.##"/>
+                </Button>
                 <TextBlock Grid.Column="1" Grid.Row="0" Margin="12,0,0,0"
-                           HorizontalAlignment="Left" Text="{x:Bind Key, Mode=OneWay}"/>
+                           HorizontalAlignment="Left" VerticalAlignment="Center" Text="{x:Bind Key, Mode=OneWay}"/>
                 <TextBlock Grid.Column="1" Grid.Row="0"
-                           HorizontalAlignment="Right" Text="{x:Bind Value, Mode=OneWay, Converter={StaticResource ValueConverter}}"/>
+                           HorizontalAlignment="Right" VerticalAlignment="Center"
+                           Text="{x:Bind Value, Mode=OneWay, Converter={StaticResource ValueConverter}}"/>
             </Grid>
         </DataTemplate>
 
@@ -89,20 +100,22 @@
             </Grid>
         </DataTemplate>
 
-        <DataTemplate x:Key="ListDataTemplate" x:DataType="viewModels:KeyList">
+        <DataTemplate x:Key="ListDataTemplate" x:DataType="viewModels:KeyValue">
             <Grid>
                 <Grid.ColumnDefinitions>
                     <ColumnDefinition Width="{StaticResource GridLength}"/>
                     <ColumnDefinition Width="*"/>
                 </Grid.ColumnDefinitions>
-                <SymbolIcon Grid.Column="0" Grid.Row="0" Symbol="List"
-                            VerticalAlignment="Center" HorizontalAlignment="Center" Margin="0,0,12,0"
-                            Foreground="{ThemeResource SystemControlForegroundAccentBrush}"/>
+                <Button Grid.Column="0" Grid.Row="0"
+                        Style="{StaticResource LocalTextBlockButtonStyle}"
+                        Command="{x:Bind EditCommand}">
+                    <TextBlock FontFamily="{StaticResource SymbolThemeFontFamily}" Text="&#xE8FD;"/>
+                </Button>
                 <TextBlock Grid.Column="1" Grid.Row="0" Margin="12,0,0,0"
                            HorizontalAlignment="Left" VerticalAlignment="Center" Text="{x:Bind Key, Mode=OneWay}"/>
                 <Button Grid.Column="1" Grid.Row="0"
                         Style="{StaticResource TextBlockButtonStyle}"
-                        HorizontalAlignment="Right" Command="{x:Bind ExpandListCommand}">
+                        HorizontalAlignment="Right" Command="{x:Bind EditCommand}">
                     <TextBlock VerticalAlignment="Center" Margin="12,0,0,0"
                                Text="{x:Bind Value, Mode=OneWay, Converter={StaticResource ValueConverter}}"/>
                 </Button>
@@ -141,7 +154,7 @@
                 <CommandBar.PrimaryCommands>
                     <AppBarButton Icon="Up" Label="Up" Command="{x:Bind _viewModel.UpCommand}"/>
                     <AppBarButton Icon="Delete" Label="Delete" Command="{x:Bind _viewModel.RemoveDataCommand}"/>
-                    <AppBarButton Icon="Edit" Label="Edit" Command="{x:Bind _viewModel.EditDataCommand}"/>
+                    <AppBarButton Icon="Edit" Label="Edit" Command="{x:Bind _viewModel.EditSelectedDataCommand}"/>
                     <AppBarButton Icon="Add" Label="Add" Command="{x:Bind _viewModel.AddDataCommand}"/>
                 </CommandBar.PrimaryCommands>
             </CommandBar>

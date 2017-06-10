@@ -108,7 +108,6 @@
     <Compile Include="Properties\AssemblyInfo.cs" />
     <Compile Include="ViewModels\EditDataUserControlViewModel.cs" />
     <Compile Include="ViewModelLocator.cs" />
-    <Compile Include="ViewModels\KeyList.cs" />
     <Compile Include="ViewModels\KeyValue.cs" />
     <Compile Include="ViewModels\MainPageViewModel.cs" />
     <Compile Include="Bridges\MainPageViewModelService.cs" />
