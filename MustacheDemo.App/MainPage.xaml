@@ -37,44 +37,81 @@
     DataContext="{Binding RelativeSource={RelativeSource Self}, Converter={StaticResource ViewModelLocator}}">
     <Page.Resources>
         <converters:ValueConverter x:Key="ValueConverter"/>
-
-        <DataTemplate x:Key="KeyValueDataTemplate" x:DataType="viewModels:KeyValue">
+        
+        <GridLength x:Key="GridLength">62</GridLength>
+        
+        <DataTemplate x:Key="StringDataTemplate" x:DataType="viewModels:KeyValue">
             <Grid>
-                <TextBlock Grid.Column="0" Grid.Row="0"
+                <Grid.ColumnDefinitions>
+                    <ColumnDefinition Width="{StaticResource GridLength}"/>
+                    <ColumnDefinition Width="*"/>
+                </Grid.ColumnDefinitions>
+                <TextBlock Grid.Column="0" Grid.Row="0" Text="Abc" 
+                           HorizontalAlignment="Center" Margin="0,0,12,0"
+                           Foreground="{ThemeResource SystemControlForegroundAccentBrush}"/>
+                <TextBlock Grid.Column="1" Grid.Row="0" Margin="12,0,0,0"
                            HorizontalAlignment="Left" Text="{x:Bind Key, Mode=OneWay}"/>
-                <TextBlock Grid.Column="0" Grid.Row="0"
+                <TextBlock Grid.Column="1" Grid.Row="0"
+                           HorizontalAlignment="Right" Text="{x:Bind Value, Mode=OneWay, Converter={StaticResource ValueConverter}}"/>
+            </Grid>
+        </DataTemplate>
+
+        <DataTemplate x:Key="NumberDataTemplate" x:DataType="viewModels:KeyValue">
+            <Grid>
+                <Grid.ColumnDefinitions>
+                    <ColumnDefinition Width="{StaticResource GridLength}"/>
+                    <ColumnDefinition Width="*"/>
+                </Grid.ColumnDefinitions>
+                <TextBlock Grid.Column="0" Grid.Row="0" Text="#.##" 
+                           HorizontalAlignment="Center" Margin="0,0,12,0"
+                           Foreground="{ThemeResource SystemControlForegroundAccentBrush}"/>
+                <TextBlock Grid.Column="1" Grid.Row="0" Margin="12,0,0,0"
+                           HorizontalAlignment="Left" Text="{x:Bind Key, Mode=OneWay}"/>
+                <TextBlock Grid.Column="1" Grid.Row="0"
                            HorizontalAlignment="Right" Text="{x:Bind Value, Mode=OneWay, Converter={StaticResource ValueConverter}}"/>
             </Grid>
         </DataTemplate>
 
         <DataTemplate x:Key="BoolDataTemplate" x:DataType="viewModels:KeyValue">
             <Grid>
-                <TextBlock Grid.Column="0" Grid.Row="0"
-                           HorizontalAlignment="Left" VerticalAlignment="Center" Text="{x:Bind Key, Mode=OneWay}"/>
+                <Grid.ColumnDefinitions>
+                    <ColumnDefinition Width="{StaticResource GridLength}"/>
+                    <ColumnDefinition Width="*"/>
+                </Grid.ColumnDefinitions>
                 <ToggleSwitch Grid.Column="0" Grid.Row="0" MinWidth="20"
-                              OnContent="true" OffContent="false"
-                              HorizontalAlignment="Right" IsOn="{x:Bind Value, Converter={StaticResource ValueConverter}, Mode=TwoWay}" />
+                              OnContent="" OffContent=""
+                              HorizontalAlignment="Center" IsOn="{x:Bind Value, Converter={StaticResource ValueConverter}, Mode=TwoWay}" />
+                <TextBlock Grid.Column="1" Grid.Row="0" Margin="12,0,0,0"
+                           HorizontalAlignment="Left" VerticalAlignment="Center" Text="{x:Bind Key, Mode=OneWay}"/>
+                <TextBlock Grid.Column="1" Grid.Row="0"
+                           HorizontalAlignment="Right" VerticalAlignment="Center"
+                           Text="{x:Bind Value, Mode=OneWay, Converter={StaticResource ValueConverter}}"/>
             </Grid>
         </DataTemplate>
 
         <DataTemplate x:Key="ListDataTemplate" x:DataType="viewModels:KeyList">
             <Grid>
-                <TextBlock Grid.Column="0" Grid.Row="0"
+                <Grid.ColumnDefinitions>
+                    <ColumnDefinition Width="{StaticResource GridLength}"/>
+                    <ColumnDefinition Width="*"/>
+                </Grid.ColumnDefinitions>
+                <SymbolIcon Grid.Column="0" Grid.Row="0" Symbol="List"
+                            VerticalAlignment="Center" HorizontalAlignment="Center" Margin="0,0,12,0"
+                            Foreground="{ThemeResource SystemControlForegroundAccentBrush}"/>
+                <TextBlock Grid.Column="1" Grid.Row="0" Margin="12,0,0,0"
                            HorizontalAlignment="Left" VerticalAlignment="Center" Text="{x:Bind Key, Mode=OneWay}"/>
-                <Button Grid.Column="0" Grid.Row="0"
-                            Style="{StaticResource TextBlockButtonStyle}"
-                            HorizontalAlignment="Right" Command="{x:Bind ExpandListCommand}">
-                    <StackPanel Orientation="Horizontal">
-                        <SymbolIcon Symbol="List" VerticalAlignment="Center"/>
-                        <TextBlock VerticalAlignment="Center" Margin="12,0,0,0"
-                                   Text="{x:Bind Value, Mode=OneWay, Converter={StaticResource ValueConverter}}"/>
-                    </StackPanel>
+                <Button Grid.Column="1" Grid.Row="0"
+                        Style="{StaticResource TextBlockButtonStyle}"
+                        HorizontalAlignment="Right" Command="{x:Bind ExpandListCommand}">
+                    <TextBlock VerticalAlignment="Center" Margin="12,0,0,0"
+                               Text="{x:Bind Value, Mode=OneWay, Converter={StaticResource ValueConverter}}"/>
                 </Button>
             </Grid>
         </DataTemplate>
 
         <app:DataDataTemplateSelector x:Key="DataDataTemplateSelector" 
-                                      KeyValueDataTemplate="{StaticResource KeyValueDataTemplate}"
+                                      StringDataTemplate="{StaticResource StringDataTemplate}"
+                                      NumberDataTemplate="{StaticResource NumberDataTemplate}"
                                       BoolDataTemplate="{StaticResource BoolDataTemplate}"
                                       ListDataTemplate="{StaticResource ListDataTemplate}"/>
     </Page.Resources>
@@ -102,9 +139,10 @@
             </CommandBar>
             <CommandBar x:Name="DataCommandBar">
                 <CommandBar.PrimaryCommands>
-                    <AppBarButton Icon="Delete" Label="Add data" Command="{x:Bind _viewModel.RemoveDataCommand}"/>
-                    <AppBarButton Icon="Edit" Label="Add data" Command="{x:Bind _viewModel.EditDataCommand}"/>
-                    <AppBarButton Icon="Add" Label="Add data" Command="{x:Bind _viewModel.AddDataCommand}"/>
+                    <AppBarButton Icon="Up" Label="Up" Command="{x:Bind _viewModel.UpCommand}"/>
+                    <AppBarButton Icon="Delete" Label="Delete" Command="{x:Bind _viewModel.RemoveDataCommand}"/>
+                    <AppBarButton Icon="Edit" Label="Edit" Command="{x:Bind _viewModel.EditDataCommand}"/>
+                    <AppBarButton Icon="Add" Label="Add" Command="{x:Bind _viewModel.AddDataCommand}"/>
                 </CommandBar.PrimaryCommands>
             </CommandBar>
         </StackPanel>

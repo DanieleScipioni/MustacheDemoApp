@@ -31,7 +31,9 @@ namespace MustacheDemo.App
 {
     public class DataDataTemplateSelector : DataTemplateSelector
     {
-        public DataTemplate KeyValueDataTemplate { get; set; }
+        public DataTemplate StringDataTemplate { get; set; }
+
+        public DataTemplate NumberDataTemplate { get; set; }
 
         public DataTemplate BoolDataTemplate { get; set; }
 
@@ -46,7 +48,9 @@ namespace MustacheDemo.App
 
             if (keyValue.Value is IList) return ListDataTemplate;
 
-            return KeyValueDataTemplate;
+            if (keyValue.Value is string) return StringDataTemplate;
+
+            return NumberDataTemplate;
         }
     }
 }

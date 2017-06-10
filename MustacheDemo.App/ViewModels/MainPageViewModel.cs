@@ -29,6 +29,7 @@ using System.Collections;
 using System.Collections.Generic;
 using System.Collections.ObjectModel;
 using System.Linq;
+using Windows.UI.Xaml.Media.Animation;
 
 namespace MustacheDemo.App.ViewModels
 {
@@ -40,9 +41,16 @@ namespace MustacheDemo.App.ViewModels
 
     internal class MainPageViewModel : BindableBase, IKeyValueDataService
     {
-        #region Binding properties
+        #region Propery backing fields
 
         private string _template;
+        private bool _renderCompleted;
+        private object _selectedData;
+
+        #endregion
+
+        #region Binding properties
+
         public string Template
         {
             get { return _template; }
@@ -60,7 +68,6 @@ namespace MustacheDemo.App.ViewModels
             }
         }
 
-        private bool _renderCompleted;
         public bool RenderCompleted
         {
             get { return _renderCompleted; }
@@ -69,7 +76,6 @@ namespace MustacheDemo.App.ViewModels
 
         public ObservableCollection<object> Data { get; } = new ObservableCollection<object>();
 
-        private object _selectedData;
         public object SelectedData
         {
             get { return _selectedData; }
@@ -94,6 +100,8 @@ namespace MustacheDemo.App.ViewModels
 
         public readonly DelegateCommand RemoveDataCommand;
 
+        public readonly DelegateCommand UpCommand;
+
         #endregion
 
         private Dictionary<string, object> _data;
@@ -111,6 +119,7 @@ namespace MustacheDemo.App.ViewModels
             AddDataCommand = new DelegateCommand(AddData);
             EditDataCommand = new DelegateCommand(EditData);
             RemoveDataCommand = new DelegateCommand(RemoveData);
+            UpCommand = new DelegateCommand(Up, UpCanExecute);
 
             _data = new Dictionary<string, object>
             {
@@ -125,12 +134,6 @@ namespace MustacheDemo.App.ViewModels
             };
 
             _dataStack = new Stack<object>();
-            _dataStack.Push(_data);
-
-            foreach (KeyValue item in DataToList(_data))
-            {
-                Data.Add(item);
-            }
 
             _canRender = true;
             _template = @"Hello {{Name}}
@@ -141,21 +144,8 @@ Well, {{TaxedValue}} {{Currency}}, after taxes.
 {{#List}}{{.}}{{/List}}";
 
             SelectedIndex = -1;
-        }
 
-        private IEnumerable<KeyValue> DataToList(Dictionary<string, object> data)
-        {
-            foreach (KeyValuePair<string, object> keyValuePair in data)
-            {
-                if (keyValuePair.Value is IList)
-                {
-                    yield return new KeyList(keyValuePair.Key, keyValuePair.Value, this);
-                }
-                else
-                {
-                    yield return new KeyValue(keyValuePair.Key, keyValuePair.Value, this);
-                }
-            }
+            SetContext(_data);
         }
 
         #region Command implementations
@@ -208,6 +198,12 @@ Well, {{TaxedValue}} {{Currency}}, after taxes.
             var keyValue = SelectedData as KeyValue;
             if (keyValue == null) return;
 
+            if (keyValue.Value is List<object>)
+            {
+                SetContext(keyValue.Value);
+                return;
+            }
+
             var tuple = new Tuple<string, object>(keyValue.Key, keyValue.Value);
             Tuple<string, object> newTuple = await _mainPageViewModelService.EditData(tuple);
             if (newTuple == null) return;
@@ -245,6 +241,16 @@ Well, {{TaxedValue}} {{Currency}}, after taxes.
             dictionary.Remove(keyValue.Key);
         }
 
+        private bool UpCanExecute(object arg)
+        {
+            return _dataStack.Count > 1;
+        }
+
+        private void Up(object obj)
+        {
+            ToParetContext();
+        }
+
         #endregion
 
         #region IKeyValueDataService
@@ -263,15 +269,9 @@ Well, {{TaxedValue}} {{Currency}}, after taxes.
             if (dictionary == null) return;
 
             object value = dictionary[key];
-            var list = value as List<object>;
-            if (list != null)
+            if (value is List<object>)
             {
-                List<KeyValue> keyValues = list.Select((item, index) => new KeyValue(index.ToString(), item, this)).ToList();
-                Data.Clear();
-                foreach (KeyValue keyValue in keyValues)
-                {
-                    Data.Add(keyValue);
-                }
+                SetContext(value);
                 return;
             }
             if (value is IDictionary)
@@ -281,5 +281,58 @@ Well, {{TaxedValue}} {{Currency}}, after taxes.
         }
 
         #endregion
+
+        private void ToParetContext()
+        {
+            _dataStack.Pop();
+            UpdateContext(_dataStack.Peek());
+            UpCommand.RaiseCanExecuteChanged();
+        }
+
+        private void SetContext(object obj)
+        {
+            _dataStack.Push(obj);
+            UpdateContext(obj);
+            UpCommand.RaiseCanExecuteChanged();
+        }
+
+        private void UpdateContext(object context)
+        {
+            var dictionary = context as Dictionary<string, object>;
+            if (dictionary != null)
+            {
+                Data.Clear();
+                foreach (KeyValue keyValue in DataToList(dictionary))
+                {
+                    Data.Add(keyValue);
+                }
+            }
+
+            var list = context as List<object>;
+            if (list != null)
+            {
+                List<KeyValue> keyValues = list.Select((item, index) => new KeyValue(index.ToString(), item, this)).ToList();
+                Data.Clear();
+                foreach (KeyValue keyValue in keyValues)
+                {
+                    Data.Add(keyValue);
+                }
+            }
+        }
+
+        private IEnumerable<KeyValue> DataToList(Dictionary<string, object> data)
+        {
+            foreach (KeyValuePair<string, object> keyValuePair in data)
+            {
+                if (keyValuePair.Value is IList)
+                {
+                    yield return new KeyList(keyValuePair.Key, keyValuePair.Value, this);
+                }
+                else
+                {
+                    yield return new KeyValue(keyValuePair.Key, keyValuePair.Value, this);
+                }
+            }
+        }
     }
 }
