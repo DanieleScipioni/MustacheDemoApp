@@ -37,7 +37,7 @@
     DataContext="{Binding RelativeSource={RelativeSource Self}, Converter={StaticResource ViewModelLocator}}">
     <Page.Resources>
         <converters:ValueConverter x:Key="ValueConverter"/>
-        
+
         <DataTemplate x:Key="KeyValueDataTemplate" x:DataType="viewModels:KeyValue">
             <Grid>
                 <TextBlock Grid.Column="0" Grid.Row="0"
@@ -56,16 +56,25 @@
                               HorizontalAlignment="Right" IsOn="{x:Bind Value, Converter={StaticResource ValueConverter}, Mode=TwoWay}" />
             </Grid>
         </DataTemplate>
-        
-        <DataTemplate x:Key="ListDataTemplate" x:DataType="viewModels:KeyValue">
-            <StackPanel Orientation="Vertical">
-                <TextBlock Text="{x:Bind Key}"/>
-                <TextBlock Text="{x:Bind Value}"/>
-            </StackPanel>
+
+        <DataTemplate x:Key="ListDataTemplate" x:DataType="viewModels:KeyList">
+            <Grid>
+                <TextBlock Grid.Column="0" Grid.Row="0"
+                           HorizontalAlignment="Left" VerticalAlignment="Center" Text="{x:Bind Key, Mode=OneWay}"/>
+                <Button Grid.Column="0" Grid.Row="0"
+                            Style="{StaticResource TextBlockButtonStyle}"
+                            HorizontalAlignment="Right" Command="{x:Bind ExpandListCommand}">
+                    <StackPanel Orientation="Horizontal">
+                        <SymbolIcon Symbol="List" VerticalAlignment="Center"/>
+                        <TextBlock VerticalAlignment="Center" Margin="12,0,0,0"
+                                   Text="{x:Bind Value, Mode=OneWay, Converter={StaticResource ValueConverter}}"/>
+                    </StackPanel>
+                </Button>
+            </Grid>
         </DataTemplate>
 
         <app:DataDataTemplateSelector x:Key="DataDataTemplateSelector" 
-                                      KeyValyeDataTemplate="{StaticResource KeyValueDataTemplate}"
+                                      KeyValueDataTemplate="{StaticResource KeyValueDataTemplate}"
                                       BoolDataTemplate="{StaticResource BoolDataTemplate}"
                                       ListDataTemplate="{StaticResource ListDataTemplate}"/>
     </Page.Resources>

@@ -28,45 +28,14 @@ using System;
 using System.Collections;
 using System.Collections.Generic;
 using System.Collections.ObjectModel;
+using System.Linq;
 
 namespace MustacheDemo.App.ViewModels
 {
     internal interface IKeyValueDataService
     {
         void UpdateDataValue(string key, object value);
-    }
-
-    internal class KeyValue : BindableBase
-    {
-        private string _key;
-        private readonly IKeyValueDataService _keyValueDataService;
-        private object _value;
-
-        public string Key
-        {
-            get { return _key; }
-            set { SetProperty(ref _key, value); }
-        }
-
-        public object Value
-        {
-            get { return _value; }
-            set
-            {
-                if (SetProperty(ref _value, value))
-                {
-                    _keyValueDataService.UpdateDataValue(_key, _value);
-                }
-            }
-        }
-
-        public KeyValue(string key, object value, IKeyValueDataService keyValueDataService)
-        {
-            _key = key;
-            _keyValueDataService = keyValueDataService;
-            var enumerable = value as IList;
-            _value = enumerable == null ? value : $"[{enumerable.Count}]";
-        }
+        void EditValue(string key);
     }
 
     internal class MainPageViewModel : BindableBase, IKeyValueDataService
@@ -130,7 +99,7 @@ namespace MustacheDemo.App.ViewModels
         private Dictionary<string, object> _data;
 
         private string _templateCache;
-        private Dictionary<string, object> currentObject;
+        private readonly Stack<object> _dataStack;
         private bool _canRender;
         private readonly MainPageViewModelService _mainPageViewModelService;
 
@@ -155,9 +124,10 @@ namespace MustacheDemo.App.ViewModels
                 }}
             };
 
-            currentObject = _data;
+            _dataStack = new Stack<object>();
+            _dataStack.Push(_data);
 
-            foreach (KeyValue item in DataToList(currentObject))
+            foreach (KeyValue item in DataToList(_data))
             {
                 Data.Add(item);
             }
@@ -177,7 +147,14 @@ Well, {{TaxedValue}} {{Currency}}, after taxes.
         {
             foreach (KeyValuePair<string, object> keyValuePair in data)
             {
-                yield return new KeyValue(keyValuePair.Key, keyValuePair.Value, this);
+                if (keyValuePair.Value is IList)
+                {
+                    yield return new KeyList(keyValuePair.Key, keyValuePair.Value, this);
+                }
+                else
+                {
+                    yield return new KeyValue(keyValuePair.Key, keyValuePair.Value, this);
+                }
             }
         }
 
@@ -215,12 +192,15 @@ Well, {{TaxedValue}} {{Currency}}, after taxes.
 
         private async void AddData(object parameter)
         {
+            var dictionary = _dataStack.Peek() as IDictionary;
+            if (dictionary == null) return;
+
             Tuple<string, object> tuple = await _mainPageViewModelService.NewData();
             if (tuple == null) return;
 
             Data.Add(new KeyValue(tuple.Item1, tuple.Item2, this));
 
-            currentObject.Add(tuple.Item1, tuple.Item2);
+            dictionary.Add(tuple.Item1, tuple.Item2);
         }
 
         private async void EditData(object parameter)
@@ -232,9 +212,12 @@ Well, {{TaxedValue}} {{Currency}}, after taxes.
             Tuple<string, object> newTuple = await _mainPageViewModelService.EditData(tuple);
             if (newTuple == null) return;
 
-            if (tuple.Item1 != newTuple.Item1) currentObject.Remove(tuple.Item1);
+            var dictionary = _dataStack.Peek() as IDictionary;
+            if (dictionary == null) return;
+
+            if (tuple.Item1 != newTuple.Item1) dictionary.Remove(tuple.Item1);
             
-            currentObject[newTuple.Item1] = newTuple.Item2;
+            dictionary[newTuple.Item1] = newTuple.Item2;
 
             if (newTuple.Item2.GetType() == tuple.Item2.GetType())
             {
@@ -254,9 +237,12 @@ Well, {{TaxedValue}} {{Currency}}, after taxes.
             var keyValue = SelectedData as KeyValue;
             if (keyValue == null) return;
 
+            var dictionary = _dataStack.Peek() as IDictionary;
+            if (dictionary == null) return;
+
             Data.RemoveAt(SelectedIndex);
 
-            currentObject.Remove(keyValue.Key);
+            dictionary.Remove(keyValue.Key);
         }
 
         #endregion
@@ -265,7 +251,33 @@ Well, {{TaxedValue}} {{Currency}}, after taxes.
 
         public void UpdateDataValue(string key, object value)
         {
-            currentObject[key] = value;
+            var dictionary = _dataStack.Peek() as IDictionary;
+            if (dictionary == null) return;
+
+            dictionary[key] = value;
+        }
+
+        public void EditValue(string key)
+        {
+            var dictionary = _dataStack.Peek() as IDictionary;
+            if (dictionary == null) return;
+
+            object value = dictionary[key];
+            var list = value as List<object>;
+            if (list != null)
+            {
+                List<KeyValue> keyValues = list.Select((item, index) => new KeyValue(index.ToString(), item, this)).ToList();
+                Data.Clear();
+                foreach (KeyValue keyValue in keyValues)
+                {
+                    Data.Add(keyValue);
+                }
+                return;
+            }
+            if (value is IDictionary)
+            {
+                return;
+            }
         }
 
         #endregion

@@ -22,31 +22,23 @@
 // SOFTWARE.
 // ******************************************************************************
 
-using System.Collections;
-using Windows.UI.Xaml;
-using Windows.UI.Xaml.Controls;
-using MustacheDemo.App.ViewModels;
+using MustacheDemo.Core;
 
-namespace MustacheDemo.App
+namespace MustacheDemo.App.ViewModels
 {
-    public class DataDataTemplateSelector : DataTemplateSelector
+    internal class KeyList : KeyValue
     {
-        public DataTemplate KeyValueDataTemplate { get; set; }
+        public readonly DelegateCommand ExpandListCommand;
 
-        public DataTemplate BoolDataTemplate { get; set; }
-
-        public DataTemplate ListDataTemplate { get; set; }
-
-        protected override DataTemplate SelectTemplateCore(object item, DependencyObject container)
+        public KeyList(string key, object value, IKeyValueDataService keyValueDataService) : base(key, value,
+            keyValueDataService)
         {
-            var keyValue = item as KeyValue;
-            if (keyValue == null) return base.SelectTemplateCore(item, container);
+            ExpandListCommand = new DelegateCommand(ExpandList);
+        }
 
-            if (keyValue.Value is bool) return BoolDataTemplate;
-
-            if (keyValue.Value is IList) return ListDataTemplate;
-
-            return KeyValueDataTemplate;
+        private void ExpandList(object obj)
+        {
+            _keyValueDataService.EditValue(_key);
         }
     }
 }

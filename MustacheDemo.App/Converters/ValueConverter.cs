@@ -23,6 +23,7 @@
 // ******************************************************************************
 
 using System;
+using System.Collections;
 using Windows.UI.Xaml.Data;
 
 namespace MustacheDemo.App.Converters
@@ -36,6 +37,10 @@ namespace MustacheDemo.App.Converters
                 bool parsed;
                 return bool.TryParse(value.ToString(), out parsed) && parsed;
             }
+
+            var list = value as IList;
+            if (list != null) return list.Count.ToString();
+
             return value?.ToString();
         }
 

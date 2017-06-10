@@ -24,6 +24,7 @@
 
 using MustacheDemo.Core;
 using System;
+using System.Collections;
 using System.Collections.Generic;
 using System.Linq;
 
@@ -36,7 +37,8 @@ namespace MustacheDemo.App.ViewModels
             typeof(int),
             typeof(decimal),
             typeof(bool),
-            typeof(string)
+            typeof(string),
+            typeof(IList)
         };
 
         public object Value { get; private set; }

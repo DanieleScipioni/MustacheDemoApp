@@ -1,4 +1,4 @@
-﻿// ******************************************************************************
+// ******************************************************************************
 // MIT License
 // 
 // Copyright (c) 2017 Daniele Scipioni
@@ -22,31 +22,39 @@
 // SOFTWARE.
 // ******************************************************************************
 
-using System.Collections;
-using Windows.UI.Xaml;
-using Windows.UI.Xaml.Controls;
-using MustacheDemo.App.ViewModels;
+using MustacheDemo.Core;
 
-namespace MustacheDemo.App
+namespace MustacheDemo.App.ViewModels
 {
-    public class DataDataTemplateSelector : DataTemplateSelector
+    internal class KeyValue : BindableBase
     {
-        public DataTemplate KeyValueDataTemplate { get; set; }
+        protected string _key;
+        protected object _value;
+        protected readonly IKeyValueDataService _keyValueDataService;
 
-        public DataTemplate BoolDataTemplate { get; set; }
-
-        public DataTemplate ListDataTemplate { get; set; }
-
-        protected override DataTemplate SelectTemplateCore(object item, DependencyObject container)
+        public string Key
         {
-            var keyValue = item as KeyValue;
-            if (keyValue == null) return base.SelectTemplateCore(item, container);
+            get { return _key; }
+            set { SetProperty(ref _key, value); }
+        }
 
-            if (keyValue.Value is bool) return BoolDataTemplate;
+        public object Value
+        {
+            get { return _value; }
+            set
+            {
+                if (SetProperty(ref _value, value))
+                {
+                    _keyValueDataService.UpdateDataValue(_key, _value);
+                }
+            }
+        }
 
-            if (keyValue.Value is IList) return ListDataTemplate;
-
-            return KeyValueDataTemplate;
+        public KeyValue(string key, object value, IKeyValueDataService keyValueDataService)
+        {
+            _key = key;
+            _value = value;
+            _keyValueDataService = keyValueDataService;
         }
     }
 }
