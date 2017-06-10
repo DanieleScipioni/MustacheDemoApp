@@ -248,12 +248,6 @@ Well, {{TaxedValue}} {{Currency}}, after taxes.
             Tuple<string, object> newTuple = await _mainPageViewModelService.EditData(tuple);
             if (newTuple == null) return;
 
-            var dictionary = _dataStack.Peek() as IDictionary<string, object>;
-            if (dictionary == null) return;
-
-            if (tuple.Item1 != newTuple.Item1) dictionary.Remove(tuple.Item1);
-
-            dictionary[newTuple.Item1] = newTuple.Item2;
 
             if (newTuple.Item2.GetType() == tuple.Item2.GetType())
             {
@@ -262,10 +256,37 @@ Well, {{TaxedValue}} {{Currency}}, after taxes.
             }
             else
             {
-                int selectedIndex = SelectedIndex;
-                Data.RemoveAt(selectedIndex);
-                Data.Insert(selectedIndex, new ContextEntry(newTuple.Item1, newTuple.Item2, this));
+                int index = Data.IndexOf(contextEntry);
+                Data.RemoveAt(index);
+                Data.Insert(index, new ContextEntry(newTuple.Item1, newTuple.Item2, this));
             }
+
+            object currentContext = _dataStack.Peek();
+
+            var dictionary = currentContext as IDictionary<string, object>;
+            if (dictionary != null)
+            {
+                SetDictionaryData(dictionary, contextEntry, tuple, newTuple);
+            }
+
+            var listContext = currentContext as IList<object>;
+            if (listContext == null) return;
+        }
+
+        private void SetDictionaryData(IDictionary<string, object> dictionary, ContextEntry contextEntry,
+            Tuple<string, object> tuple, Tuple<string, object> newTuple)
+        {
+            if (tuple.Item1 != newTuple.Item1) dictionary.Remove(tuple.Item1);
+
+            dictionary[newTuple.Item1] = newTuple.Item2;
+
+
+        }
+
+        private void SetListData(IList<object> list, ContextEntry contextEntry,
+            Tuple<string, object> tuple, Tuple<string, object> newTuple)
+        {
+            
         }
 
         #endregion

@@ -127,10 +127,10 @@ namespace MustacheDemo.App.ViewModels
                 ToggleSwitchVisible = isBoolValue;
                 if (isBoolValue)
                 {
-                    BoolValue = (bool) value;
+                    _boolValue = (bool) value;
                 }
                 Value = value;
-                StringValue = value.ToString();
+                _stringValue = value.ToString();
                 EvaluateValueAndType();
             }
             Key = key;
