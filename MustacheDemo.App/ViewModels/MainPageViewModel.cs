@@ -95,11 +95,11 @@ namespace MustacheDemo.App.ViewModels
         private string _templateCache;
         private readonly Stack<object> _dataStack;
         private bool _canRender;
-        private readonly MainPageViewModelService _mainPageViewModelService;
+        private readonly DataService _dataService;
 
-        public MainPageViewModel(MainPageViewModelService mainPageViewModelService)
+        public MainPageViewModel(DataService dataService)
         {
-            _mainPageViewModelService = mainPageViewModelService;
+            _dataService = dataService;
             RenderCommand = new DelegateCommand(Render, RenderCanExecute);
             EditTemplateCommand = new DelegateCommand(EditTemplate, EditTemplateCanExecute);
             AddDataCommand = new DelegateCommand(AddData);
@@ -171,7 +171,7 @@ Well, {{TaxedValue}} {{Currency}}, after taxes.
             var dictionary = _dataStack.Peek() as IDictionary;
             if (dictionary == null) return;
 
-            Tuple<string, object> tuple = await _mainPageViewModelService.NewData();
+            Tuple<string, object> tuple = await _dataService.NewData();
             if (tuple == null) return;
 
             Data.Add(new ContextEntry(tuple.Item1, tuple.Item2, this));
@@ -236,7 +236,7 @@ Well, {{TaxedValue}} {{Currency}}, after taxes.
             var listContext = currentContext as IList<object>;
 
             var tuple = new Tuple<string, object>(contextEntry.Key, contextEntry.Value);
-            Tuple<string, object> newTuple = await _mainPageViewModelService.EditData(tuple, listContext != null);
+            Tuple<string, object> newTuple = await _dataService.EditData(tuple, listContext != null);
             if (newTuple == null) return;
 
             if (newTuple.Item2.GetType() == tuple.Item2.GetType())

@@ -112,7 +112,7 @@
     <Compile Include="ViewModelLocator.cs" />
     <Compile Include="ViewModels\ContextEntry.cs" />
     <Compile Include="ViewModels\MainPageViewModel.cs" />
-    <Compile Include="Bridges\MainPageViewModelService.cs" />
+    <Compile Include="Bridges\DataService.cs" />
   </ItemGroup>
   <ItemGroup>
     <AppxManifest Include="Package.appxmanifest">

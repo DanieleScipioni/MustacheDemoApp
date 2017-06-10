@@ -30,7 +30,7 @@ using Windows.UI.Xaml.Controls;
 
 namespace MustacheDemo.App.Bridges
 {
-    internal class MainPageViewModelService
+    internal class DataService
     {
         public async Task<Tuple<string, object>> NewData()
         {

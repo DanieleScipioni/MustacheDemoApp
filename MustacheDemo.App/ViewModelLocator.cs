@@ -34,7 +34,7 @@ namespace MustacheDemo.App
         public object Convert(object value, Type targetType, object parameter, string language)
         {
             var mainPage = value as MainPage;
-            if (mainPage != null) return new MainPageViewModel(new MainPageViewModelService());
+            if (mainPage != null) return new MainPageViewModel(new DataService());
 
             return null;
         }
