@@ -172,7 +172,7 @@
             <PivotItem Header="Data">
                 <ListView ItemsSource="{x:Bind _viewModel.Data}" ItemTemplateSelector="{StaticResource DataDataTemplateSelector}"
                           SelectedItem="{x:Bind _viewModel.SelectedData, Mode=TwoWay}"
-                          SelectedIndex="{x:Bind _viewModel.SelectedIndex, Mode=TwoWay}">
+                          SelectedIndex="{x:Bind _viewModel.SelectedIndex, Mode=TwoWay}" DoubleTapped="DataEntry_OnDoubleTapped">
                     <ListView.ItemContainerStyle>
                         <Style TargetType="ListViewItem">
                             <Setter Property="HorizontalContentAlignment" Value="Stretch"/>

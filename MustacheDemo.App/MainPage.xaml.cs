@@ -24,6 +24,8 @@
 
 using MustacheDemo.App.ViewModels;
 using Windows.UI.Xaml.Controls;
+using Windows.UI.Xaml.Controls.Primitives;
+using Windows.UI.Xaml.Input;
 
 namespace MustacheDemo.App
 {
@@ -57,6 +59,19 @@ namespace MustacheDemo.App
                     BottomAppBar = DataCommandBar;
                     break;
             }
+        }
+
+        private void DataEntry_OnDoubleTapped(object sender, DoubleTappedRoutedEventArgs e)
+        {
+            var listViewItemPresenter = e.OriginalSource as ListViewItemPresenter;
+            if (listViewItemPresenter == null) return;
+
+            var keyValue = listViewItemPresenter.Content as KeyValue;
+            if (keyValue == null) return;
+
+            e.Handled = true;
+
+            _viewModel.EditKeyValue(keyValue);
         }
     }
 }
