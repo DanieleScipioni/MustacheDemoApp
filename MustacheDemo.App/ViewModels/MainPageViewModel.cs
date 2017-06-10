@@ -35,7 +35,7 @@ namespace MustacheDemo.App.ViewModels
     internal interface IKeyValueDataService
     {
         void UpdateDataValue(string key, object value);
-        void EditKeyValue(KeyValue keyValue);
+        void EditKeyValue(ContextEntry contextEntry);
     }
 
     internal class MainPageViewModel : BindableBase, IKeyValueDataService
@@ -187,14 +187,14 @@ Well, {{TaxedValue}} {{Currency}}, after taxes.
             Tuple<string, object> tuple = await _mainPageViewModelService.NewData();
             if (tuple == null) return;
 
-            Data.Add(new KeyValue(tuple.Item1, tuple.Item2, this));
+            Data.Add(new ContextEntry(tuple.Item1, tuple.Item2, this));
 
             dictionary.Add(tuple.Item1, tuple.Item2);
         }
 
         private void EditSelectedData(object parameter)
         {
-            var keyValue = SelectedData as KeyValue;
+            var keyValue = SelectedData as ContextEntry;
             if (keyValue == null) return;
 
             EditKeyValue(keyValue);
@@ -202,7 +202,7 @@ Well, {{TaxedValue}} {{Currency}}, after taxes.
 
         private void RemoveData(object parameter)
         {
-            var keyValue = SelectedData as KeyValue;
+            var keyValue = SelectedData as ContextEntry;
             if (keyValue == null) return;
 
             var dictionary = _dataStack.Peek() as IDictionary;
@@ -235,16 +235,16 @@ Well, {{TaxedValue}} {{Currency}}, after taxes.
             dictionary[key] = value;
         }
 
-        public async void EditKeyValue(KeyValue keyValue)
+        public async void EditKeyValue(ContextEntry contextEntry)
         {
-            var list = keyValue.Value as IList<object>;
+            var list = contextEntry.Value as IList<object>;
             if (list != null)
             {
                 SetContext(list);
                 return;
             }
 
-            var tuple = new Tuple<string, object>(keyValue.Key, keyValue.Value);
+            var tuple = new Tuple<string, object>(contextEntry.Key, contextEntry.Value);
             Tuple<string, object> newTuple = await _mainPageViewModelService.EditData(tuple);
             if (newTuple == null) return;
 
@@ -257,14 +257,14 @@ Well, {{TaxedValue}} {{Currency}}, after taxes.
 
             if (newTuple.Item2.GetType() == tuple.Item2.GetType())
             {
-                keyValue.Key = newTuple.Item1;
-                keyValue.Value = newTuple.Item2;
+                contextEntry.Key = newTuple.Item1;
+                contextEntry.Value = newTuple.Item2;
             }
             else
             {
                 int selectedIndex = SelectedIndex;
                 Data.RemoveAt(selectedIndex);
-                Data.Insert(selectedIndex, new KeyValue(newTuple.Item1, newTuple.Item2, this));
+                Data.Insert(selectedIndex, new ContextEntry(newTuple.Item1, newTuple.Item2, this));
             }
         }
 
@@ -290,7 +290,7 @@ Well, {{TaxedValue}} {{Currency}}, after taxes.
             if (dictionary != null)
             {
                 Data.Clear();
-                foreach (KeyValue keyValue in DataToList(dictionary))
+                foreach (ContextEntry keyValue in DataToList(dictionary))
                 {
                     Data.Add(keyValue);
                 }
@@ -299,18 +299,18 @@ Well, {{TaxedValue}} {{Currency}}, after taxes.
             var list = context as List<object>;
             if (list != null)
             {
-                List<KeyValue> keyValues = list.Select((item, index) => new KeyValue(index.ToString(), item, this)).ToList();
+                List<ContextEntry> keyValues = list.Select((item, index) => new ContextEntry(index.ToString(), item, this)).ToList();
                 Data.Clear();
-                foreach (KeyValue keyValue in keyValues)
+                foreach (ContextEntry keyValue in keyValues)
                 {
                     Data.Add(keyValue);
                 }
             }
         }
 
-        private IEnumerable<KeyValue> DataToList(Dictionary<string, object> data)
+        private IEnumerable<ContextEntry> DataToList(Dictionary<string, object> data)
         {
-            return data.Select(keyValuePair => new KeyValue(keyValuePair.Key, keyValuePair.Value, this));
+            return data.Select(keyValuePair => new ContextEntry(keyValuePair.Key, keyValuePair.Value, this));
         }
     }
 }

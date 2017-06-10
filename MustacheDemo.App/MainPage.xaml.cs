@@ -64,9 +64,8 @@ namespace MustacheDemo.App
         private void DataEntry_OnDoubleTapped(object sender, DoubleTappedRoutedEventArgs e)
         {
             var listViewItemPresenter = e.OriginalSource as ListViewItemPresenter;
-            if (listViewItemPresenter == null) return;
 
-            var keyValue = listViewItemPresenter.Content as KeyValue;
+            var keyValue = listViewItemPresenter?.Content as ContextEntry;
             if (keyValue == null) return;
 
             e.Handled = true;

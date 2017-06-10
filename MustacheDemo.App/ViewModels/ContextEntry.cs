@@ -26,7 +26,7 @@ using MustacheDemo.Core;
 
 namespace MustacheDemo.App.ViewModels
 {
-    internal class KeyValue : BindableBase
+    internal class ContextEntry : BindableBase
     {
         private string _key;
         private object _value;
@@ -52,7 +52,7 @@ namespace MustacheDemo.App.ViewModels
 
         public readonly DelegateCommand EditCommand;
 
-        public KeyValue(string key, object value, IKeyValueDataService keyValueDataService)
+        public ContextEntry(string key, object value, IKeyValueDataService keyValueDataService)
         {
             _key = key;
             _value = value;

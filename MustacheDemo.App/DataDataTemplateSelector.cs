@@ -41,7 +41,7 @@ namespace MustacheDemo.App
 
         protected override DataTemplate SelectTemplateCore(object item, DependencyObject container)
         {
-            var keyValue = item as KeyValue;
+            var keyValue = item as ContextEntry;
             if (keyValue == null) return base.SelectTemplateCore(item, container);
 
             if (keyValue.Value is bool) return BoolDataTemplate;

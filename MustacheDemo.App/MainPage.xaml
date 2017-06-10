@@ -45,7 +45,7 @@
             <Setter Property="Margin" Value="0,0,12,0"/>
         </Style>
 
-        <DataTemplate x:Key="StringDataTemplate" x:DataType="viewModels:KeyValue">
+        <DataTemplate x:Key="StringDataTemplate" x:DataType="viewModels:ContextEntry">
             <Grid>
                 <Grid.ColumnDefinitions>
                     <ColumnDefinition Width="{StaticResource GridLength}"/>
@@ -64,7 +64,7 @@
             </Grid>
         </DataTemplate>
 
-        <DataTemplate x:Key="NumberDataTemplate" x:DataType="viewModels:KeyValue">
+        <DataTemplate x:Key="NumberDataTemplate" x:DataType="viewModels:ContextEntry">
             <Grid>
                 <Grid.ColumnDefinitions>
                     <ColumnDefinition Width="{StaticResource GridLength}"/>
@@ -83,7 +83,7 @@
             </Grid>
         </DataTemplate>
 
-        <DataTemplate x:Key="BoolDataTemplate" x:DataType="viewModels:KeyValue">
+        <DataTemplate x:Key="BoolDataTemplate" x:DataType="viewModels:ContextEntry">
             <Grid>
                 <Grid.ColumnDefinitions>
                     <ColumnDefinition Width="{StaticResource GridLength}"/>
@@ -100,7 +100,7 @@
             </Grid>
         </DataTemplate>
 
-        <DataTemplate x:Key="ListDataTemplate" x:DataType="viewModels:KeyValue">
+        <DataTemplate x:Key="ListDataTemplate" x:DataType="viewModels:ContextEntry">
             <Grid>
                 <Grid.ColumnDefinitions>
                     <ColumnDefinition Width="{StaticResource GridLength}"/>
