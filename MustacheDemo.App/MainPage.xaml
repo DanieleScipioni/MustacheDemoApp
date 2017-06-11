@@ -54,26 +54,7 @@
                 <Button Grid.Column="0" Grid.Row="0"
                         Style="{StaticResource LocalTextBlockButtonStyle}"
                         Command="{x:Bind EditCommand}">
-                    <TextBlock Text="Abc"/>
-                </Button>
-                <TextBlock Grid.Column="1" Grid.Row="0" Margin="12,0,0,0"
-                           HorizontalAlignment="Left" VerticalAlignment="Center" Text="{x:Bind Key, Mode=OneWay}"/>
-                <TextBlock Grid.Column="1" Grid.Row="0"
-                           HorizontalAlignment="Right" VerticalAlignment="Center"
-                           Text="{x:Bind Value, Mode=OneWay, Converter={StaticResource ValueConverter}}"/>
-            </Grid>
-        </DataTemplate>
-
-        <DataTemplate x:Key="NumberDataTemplate" x:DataType="viewModels:ContextEntry">
-            <Grid>
-                <Grid.ColumnDefinitions>
-                    <ColumnDefinition Width="{StaticResource GridLength}"/>
-                    <ColumnDefinition Width="*"/>
-                </Grid.ColumnDefinitions>
-                <Button Grid.Column="0" Grid.Row="0"
-                        Style="{StaticResource LocalTextBlockButtonStyle}"
-                        Command="{x:Bind EditCommand}">
-                    <TextBlock Text="#.##"/>
+                    <TextBlock Text="{x:Bind IconText}" FontFamily="{x:Bind FontFamily}"/>
                 </Button>
                 <TextBlock Grid.Column="1" Grid.Row="0" Margin="12,0,0,0"
                            HorizontalAlignment="Left" VerticalAlignment="Center" Text="{x:Bind Key, Mode=OneWay}"/>
@@ -100,33 +81,9 @@
             </Grid>
         </DataTemplate>
 
-        <DataTemplate x:Key="ListDataTemplate" x:DataType="viewModels:ContextEntry">
-            <Grid>
-                <Grid.ColumnDefinitions>
-                    <ColumnDefinition Width="{StaticResource GridLength}"/>
-                    <ColumnDefinition Width="*"/>
-                </Grid.ColumnDefinitions>
-                <Button Grid.Column="0" Grid.Row="0"
-                        Style="{StaticResource LocalTextBlockButtonStyle}"
-                        Command="{x:Bind EditCommand}">
-                    <TextBlock FontFamily="{StaticResource SymbolThemeFontFamily}" Text="&#xE8FD;"/>
-                </Button>
-                <TextBlock Grid.Column="1" Grid.Row="0" Margin="12,0,0,0"
-                           HorizontalAlignment="Left" VerticalAlignment="Center" Text="{x:Bind Key, Mode=OneWay}"/>
-                <Button Grid.Column="1" Grid.Row="0"
-                        Style="{StaticResource TextBlockButtonStyle}"
-                        HorizontalAlignment="Right" Command="{x:Bind EditCommand}">
-                    <TextBlock VerticalAlignment="Center" Margin="12,0,0,0"
-                               Text="{x:Bind Value, Mode=OneWay, Converter={StaticResource ValueConverter}}"/>
-                </Button>
-            </Grid>
-        </DataTemplate>
-
         <app:DataDataTemplateSelector x:Key="DataDataTemplateSelector" 
                                       StringDataTemplate="{StaticResource StringDataTemplate}"
-                                      NumberDataTemplate="{StaticResource NumberDataTemplate}"
-                                      BoolDataTemplate="{StaticResource BoolDataTemplate}"
-                                      ListDataTemplate="{StaticResource ListDataTemplate}"/>
+                                      BoolDataTemplate="{StaticResource BoolDataTemplate}"/>
     </Page.Resources>
 
     <Grid Background="{ThemeResource ApplicationPageBackgroundThemeBrush}">

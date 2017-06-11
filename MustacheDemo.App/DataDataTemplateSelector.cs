@@ -22,7 +22,6 @@
 // SOFTWARE.
 // ******************************************************************************
 
-using System.Collections;
 using Windows.UI.Xaml;
 using Windows.UI.Xaml.Controls;
 using MustacheDemo.App.ViewModels;
@@ -33,11 +32,7 @@ namespace MustacheDemo.App
     {
         public DataTemplate StringDataTemplate { get; set; }
 
-        public DataTemplate NumberDataTemplate { get; set; }
-
         public DataTemplate BoolDataTemplate { get; set; }
-
-        public DataTemplate ListDataTemplate { get; set; }
 
         protected override DataTemplate SelectTemplateCore(object item, DependencyObject container)
         {
@@ -46,11 +41,7 @@ namespace MustacheDemo.App
 
             if (keyValue.Value is bool) return BoolDataTemplate;
 
-            if (keyValue.Value is IList) return ListDataTemplate;
-
-            if (keyValue.Value is string) return StringDataTemplate;
-
-            return NumberDataTemplate;
+            return StringDataTemplate;
         }
     }
 }

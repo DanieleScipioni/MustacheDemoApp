@@ -1,4 +1,4 @@
-// ******************************************************************************
+﻿// ******************************************************************************
 // MIT License
 // 
 // Copyright (c) 2017 Daniele Scipioni
@@ -22,15 +22,24 @@
 // SOFTWARE.
 // ******************************************************************************
 
+using System.Collections.Generic;
+using Windows.UI.Xaml.Media;
 using MustacheDemo.Core;
 
 namespace MustacheDemo.App.ViewModels
 {
     internal class ContextEntry : BindableBase
     {
+        private readonly IContextEntryDataService _contextEntryDataService;
+
+        #region backing fields
+
         private string _key;
         private object _value;
-        private readonly IContextEntryDataService _contextEntryDataService;
+
+        #endregion
+
+        #region bindable properties
 
         public string Key
         {
@@ -50,7 +59,29 @@ namespace MustacheDemo.App.ViewModels
             }
         }
 
-        public readonly DelegateCommand EditCommand;
+        public DelegateCommand EditCommand { get; }
+
+        public string IconText
+        {
+            get
+            {
+                if (_value is string) return "Abc";
+                if (_value is int) return "###";
+                if (_value is decimal) return "#.##";
+                if (_value is List<object>) return "";
+                return "?";
+            }
+        }
+
+        public FontFamily FontFamily {
+            get
+            {
+                if (_value is List<object>) return new FontFamily("Segoe MDL2 Assets");
+                return FontFamily.XamlAutoFontFamily;
+            }
+        }
+
+        #endregion
 
         public ContextEntry(string key, object value, IContextEntryDataService contextEntryDataService)
         {

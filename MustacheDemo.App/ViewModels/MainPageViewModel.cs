@@ -111,7 +111,7 @@ namespace MustacheDemo.App.ViewModels
             {
                 {"Name", "Chris"},
                 {"Value", 10000},
-                {"TaxedValue", 6000},
+                {"TaxedValue", 6000m},
                 {"Currency", "dollars"},
                 {"InCa", true},
                 {"List", new List<object> {
