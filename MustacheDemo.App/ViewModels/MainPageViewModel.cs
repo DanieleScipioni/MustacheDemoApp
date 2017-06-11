@@ -29,6 +29,7 @@ using System.Collections;
 using System.Collections.Generic;
 using System.Collections.ObjectModel;
 using System.Linq;
+using Mustache;
 
 namespace MustacheDemo.App.ViewModels
 {
@@ -141,7 +142,14 @@ Well, {{TaxedValue}} {{Currency}}, after taxes.
             if (Data == null) return;
             
             _templateCache = Template;
-            Template = Mustache.Template.Compile(_templateCache.Replace("\r", Environment.NewLine)).Render(_data);
+            try
+            {
+                Template = Mustache.Template.Compile(_templateCache.Replace("\r", Environment.NewLine)).Render(_data);
+            }
+            catch (MustacheException e)
+            {
+                Template = e.Message;
+            }
             RenderCompleted = true;
             RenderCommand.RaiseCanExecuteChanged();
             EditTemplateCommand.RaiseCanExecuteChanged();
