@@ -41,7 +41,6 @@
         <converters:NegateBooleanConverter x:Key="NegateBooleanConverter"/>
     </UserControl.Resources>
     <StackPanel>
-                 <!--IsReadOnly="{x:Bind _viewModel.KeyReadOnly}"--> 
         <TextBox Text="{x:Bind _viewModel.Key, Mode=TwoWay}" PlaceholderText="Enter data key"
                  LostFocus="TextBoxKey_OnLostFocus"
                  IsEnabled="{x:Bind _viewModel.KeyReadOnly, Converter={StaticResource NegateBooleanConverter}}"

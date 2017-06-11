@@ -22,9 +22,9 @@
 // SOFTWARE.
 // ******************************************************************************
 
-using System.Collections.Generic;
-using Windows.UI.Xaml.Media;
+using MustacheDemo.App.Converters;
 using MustacheDemo.Core;
+using Windows.UI.Xaml.Media;
 
 namespace MustacheDemo.App.ViewModels
 {
@@ -61,25 +61,9 @@ namespace MustacheDemo.App.ViewModels
 
         public DelegateCommand EditCommand { get; }
 
-        public string IconText
-        {
-            get
-            {
-                if (_value is string) return "Abc";
-                if (_value is int) return "###";
-                if (_value is decimal) return "#.##";
-                if (_value is List<object>) return "";
-                return "?";
-            }
-        }
+        public string IconText { get; } 
 
-        public FontFamily FontFamily {
-            get
-            {
-                if (_value is List<object>) return new FontFamily("Segoe MDL2 Assets");
-                return FontFamily.XamlAutoFontFamily;
-            }
-        }
+        public FontFamily FontFamily { get; }
 
         #endregion
 
@@ -89,6 +73,8 @@ namespace MustacheDemo.App.ViewModels
             _value = value;
             _contextEntryDataService = contextEntryDataService;
             EditCommand = new DelegateCommand(EditCommandImpl);
+            IconText = TypeToSymbolConverter.TypeToString(_value);
+            FontFamily = TypeToSymbolConverter.TypeToFontFamily(_value);
         }
 
         private void EditCommandImpl(object parameter)
