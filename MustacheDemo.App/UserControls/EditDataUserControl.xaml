@@ -38,14 +38,14 @@
     d:DesignWidth="400">
     <UserControl.Resources>
         <userControls:BoolToRedBrush x:Key="BoolToRedBrush"/>
-        <converters:NegateBooleanConverter x:Key="NegateBooleanConverter"/>
         <converters:StringTypeToSymbolConverter x:Key="StringTypeToSymbolConverter"/>
         <converters:StringTypeToTextConverter x:Key="StringTypeToTextConverter"/>
     </UserControl.Resources>
     <StackPanel>
         <TextBox Text="{x:Bind _viewModel.Key, Mode=TwoWay}" PlaceholderText="Enter data key"
                  LostFocus="TextBoxKey_OnLostFocus"
-                 IsEnabled="{x:Bind _viewModel.KeyReadOnly, Converter={StaticResource NegateBooleanConverter}}"
+                 IsEnabled="{x:Bind _viewModel.NeedsKey}"
+                 Visibility="{x:Bind _viewModel.NeedsKey}"
                  Margin="0,4" />
         <Grid Margin="0,4">
             <Grid.ColumnDefinitions>

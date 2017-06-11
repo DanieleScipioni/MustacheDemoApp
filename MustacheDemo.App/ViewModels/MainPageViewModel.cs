@@ -168,15 +168,24 @@ Well, {{TaxedValue}} {{Currency}}, after taxes.
 
         private async void AddData(object parameter)
         {
-            var dictionary = _dataStack.Peek() as IDictionary;
-            if (dictionary == null) return;
+            object currentContext = _dataStack.Peek();
+            var dictionary = currentContext as IDictionary;
+            var list = currentContext as IList;
 
-            Tuple<string, object> tuple = await _dataService.NewData();
+            Tuple<string, object> tuple = await _dataService.NewData(list == null);
             if (tuple == null) return;
 
-            Data.Add(new ContextEntry(tuple.Item1, tuple.Item2, this));
+            if (list != null)
+            {
+                Data.Add(new ContextEntry(list.Count.ToString(), tuple.Item2, this));
+                list.Add(tuple.Item2);
+            }
+            else if (dictionary != null)
+            {
+                Data.Add(new ContextEntry(tuple.Item1, tuple.Item2, this));
+                dictionary.Add(tuple.Item1, tuple.Item2);
+            }
 
-            dictionary.Add(tuple.Item1, tuple.Item2);
         }
 
         private void EditSelectedData(object parameter)
@@ -189,6 +198,8 @@ Well, {{TaxedValue}} {{Currency}}, after taxes.
 
         private void RemoveData(object parameter)
         {
+            if (SelectedIndex == -1) return;
+
             var keyValue = Data[SelectedIndex] as ContextEntry;
             if (keyValue == null) return;
 

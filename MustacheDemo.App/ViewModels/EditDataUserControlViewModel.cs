@@ -60,7 +60,7 @@ namespace MustacheDemo.App.ViewModels
 
         public string Key { get; set; }
 
-        public bool KeyReadOnly { get; }
+        public bool NeedsKey { get; }
 
         public List<string> Types => ManagedTypes;
 
@@ -123,11 +123,11 @@ namespace MustacheDemo.App.ViewModels
 
         #endregion
 
-        public EditDataUserControlViewModel() : this(null, null, true) {}
+        public EditDataUserControlViewModel(bool canEditKey) : this(null, null, canEditKey) {}
 
-        public EditDataUserControlViewModel(string key, object value, bool canEditKey)
+        public EditDataUserControlViewModel(string key, object value, bool withKey)
         {
-            KeyReadOnly = !canEditKey;
+            NeedsKey = withKey;
             if (value == null)
             {
                 _selectedTypeIndex = -1;
@@ -154,7 +154,7 @@ namespace MustacheDemo.App.ViewModels
 
         public bool IsInputValid()
         {
-            return !string.IsNullOrEmpty(Key) && SelectedTypeIndex != -1 && _isValueValid;
+            return (!NeedsKey || !string.IsNullOrEmpty(Key)) && SelectedTypeIndex != -1 && _isValueValid;
         }
 
         private void EvaluateValueAndType()

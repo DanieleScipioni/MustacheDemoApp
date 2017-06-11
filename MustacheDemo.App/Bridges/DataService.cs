@@ -32,9 +32,9 @@ namespace MustacheDemo.App.Bridges
 {
     internal class DataService
     {
-        public async Task<Tuple<string, object>> NewData()
+        public async Task<Tuple<string, object>> NewData(bool canEditKey)
         {
-            var editDataUserControlViewModel = new EditDataUserControlViewModel();
+            var editDataUserControlViewModel = new EditDataUserControlViewModel(canEditKey);
             var contentDialog = new ContentDialog
             {
                 Content = new EditDataUserControl { DataContext = editDataUserControlViewModel },
