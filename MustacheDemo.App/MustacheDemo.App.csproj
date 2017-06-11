@@ -96,6 +96,8 @@
     <Compile Include="App.xaml.cs">
       <DependentUpon>App.xaml</DependentUpon>
     </Compile>
+    <Compile Include="Converters\StringTypeToTextConverter.cs" />
+    <Compile Include="Converters\StringTypeToSymbolConverter.cs" />
     <Compile Include="Converters\TypeToSymbolConverter.cs" />
     <Compile Include="Converters\NegateBooleanConverter.cs" />
     <Compile Include="Converters\BooleanToInvisibilityConverter.cs" />

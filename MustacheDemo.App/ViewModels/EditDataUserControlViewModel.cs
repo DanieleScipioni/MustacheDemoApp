@@ -24,7 +24,6 @@
 
 using MustacheDemo.Core;
 using System;
-using System.Collections;
 using System.Collections.Generic;
 using System.Linq;
 
@@ -32,14 +31,17 @@ namespace MustacheDemo.App.ViewModels
 {
     public class EditDataUserControlViewModel : BindableBase
     {
-        private static readonly List<Type> ManagedTypes = new List<Type>(4)
+        private static readonly List<Type> InternalTypes = new List<Type>(5)
         {
             typeof(int),
             typeof(decimal),
             typeof(bool),
             typeof(string),
-            typeof(IList)
+            typeof(List<object>)
         };
+
+        private static readonly List<string> ManagedTypes = (from t in InternalTypes
+                                                             select t.FullName).ToList();
 
         public object Value { get; private set; }
 
@@ -47,7 +49,7 @@ namespace MustacheDemo.App.ViewModels
 
         public bool KeyReadOnly { get; }
 
-        public List<string> Types { get; }
+        public List<string> Types => ManagedTypes;
 
         private int _selectedTypeIndex;
         public int SelectedTypeIndex
@@ -57,7 +59,7 @@ namespace MustacheDemo.App.ViewModels
             {
                 if (!SetProperty(ref _selectedTypeIndex, value)) return;
 
-                ToggleSwitchVisible = ManagedTypes[_selectedTypeIndex] == typeof(bool);
+                ToggleSwitchVisible = InternalTypes[_selectedTypeIndex] == typeof(bool);
                 EvaluateValueAndType();
             }
         }
@@ -115,7 +117,7 @@ namespace MustacheDemo.App.ViewModels
 
         public EditDataUserControlViewModel(string key, object value, bool canEditKey)
         {
-            Types = (from type in ManagedTypes select type.Name).ToList();
+            //Types = (from type in ManagedTypes select type.Name).ToList();
             KeyReadOnly = canEditKey;
             if (value == null)
             {
@@ -124,7 +126,7 @@ namespace MustacheDemo.App.ViewModels
             else
             {
                 Type selectedType = value.GetType();
-                _selectedTypeIndex = ManagedTypes.IndexOf(selectedType);
+                _selectedTypeIndex = InternalTypes.IndexOf(selectedType);
 
                 ToggleSwitchVisible = selectedType == typeof(bool);
                 if (ToggleSwitchVisible)
@@ -146,7 +148,7 @@ namespace MustacheDemo.App.ViewModels
 
         private void EvaluateValueAndType()
         {
-            Type selectedType = ManagedTypes[_selectedTypeIndex];
+            Type selectedType = InternalTypes[_selectedTypeIndex];
             if (selectedType == typeof(int))
             {
                 int parsed;

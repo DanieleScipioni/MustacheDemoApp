@@ -39,22 +39,41 @@
     <UserControl.Resources>
         <userControls:BoolToRedBrush x:Key="BoolToRedBrush"/>
         <converters:NegateBooleanConverter x:Key="NegateBooleanConverter"/>
+        <converters:StringTypeToSymbolConverter x:Key="StringTypeToSymbolConverter"/>
+        <converters:StringTypeToTextConverter x:Key="StringTypeToTextConverter"/>
     </UserControl.Resources>
     <StackPanel>
         <TextBox Text="{x:Bind _viewModel.Key, Mode=TwoWay}" PlaceholderText="Enter data key"
                  LostFocus="TextBoxKey_OnLostFocus"
                  IsEnabled="{x:Bind _viewModel.KeyReadOnly, Converter={StaticResource NegateBooleanConverter}}"
                  Margin="0,4" />
-        <StackPanel Orientation="Horizontal" Margin="0,4">
+        <Grid Margin="0,4">
+            <Grid.ColumnDefinitions>
+                <ColumnDefinition Width="Auto"/>
+                <ColumnDefinition Width="*"/>
+            </Grid.ColumnDefinitions>
             <TextBlock Text="Type" Margin="4,0" VerticalAlignment="Center" />
-            <ComboBox ItemsSource="{x:Bind _viewModel.Types}" SelectedIndex="{x:Bind _viewModel.SelectedTypeIndex, Mode=TwoWay}">
+            <ComboBox Grid.Column="1"
+                      HorizontalAlignment="Stretch"
+                      ItemsSource="{x:Bind _viewModel.Types}" SelectedIndex="{x:Bind _viewModel.SelectedTypeIndex, Mode=TwoWay}">
                 <ComboBox.ItemTemplate>
                     <DataTemplate x:DataType="system:String">
-                        <TextBlock Text="{x:Bind}"/>
+                        <Grid>
+                            <Grid.ColumnDefinitions>
+                                <ColumnDefinition Width="40"/>
+                                <ColumnDefinition Width="*"/>
+                            </Grid.ColumnDefinitions>
+                            <TextBlock Grid.Column="0" Text="{x:Bind Converter={StaticResource StringTypeToSymbolConverter}}"
+                                       FontFamily="{x:Bind Converter={StaticResource StringTypeToSymbolConverter}}"
+                                       HorizontalAlignment="Center" VerticalAlignment="Center"
+                                       Foreground="{ThemeResource SystemControlForegroundAccentBrush}"/>
+                            <TextBlock Grid.Column="1" Margin="12,0"
+                                       Text="{x:Bind Converter={StaticResource StringTypeToTextConverter}}"/>
+                        </Grid>
                     </DataTemplate>
                 </ComboBox.ItemTemplate>
             </ComboBox>
-        </StackPanel>
+        </Grid>
         <TextBox Text="{x:Bind _viewModel.StringValue, Mode=TwoWay}" PlaceholderText="Enter data value"
                  LostFocus="TextBoxValue_OnLostFocus" BorderBrush="{x:Bind _viewModel.IsValueValid, Converter={StaticResource BoolToRedBrush}, Mode=OneWay}"
                  Margin="0,4" Visibility="{x:Bind _viewModel.TextBoxVisible, Mode=OneWay}"/>

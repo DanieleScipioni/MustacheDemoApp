@@ -73,7 +73,7 @@ namespace MustacheDemo.App.ViewModels
             _value = value;
             _contextEntryDataService = contextEntryDataService;
             EditCommand = new DelegateCommand(EditCommandImpl);
-            IconText = TypeToSymbolConverter.TypeToString(_value);
+            IconText = TypeToSymbolConverter.TypeToSymbolString(_value);
             FontFamily = TypeToSymbolConverter.TypeToFontFamily(_value);
         }
 

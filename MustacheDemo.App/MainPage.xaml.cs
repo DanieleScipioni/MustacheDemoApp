@@ -23,8 +23,8 @@
 // ******************************************************************************
 
 using MustacheDemo.App.ViewModels;
+using Windows.UI.Xaml;
 using Windows.UI.Xaml.Controls;
-using Windows.UI.Xaml.Controls.Primitives;
 using Windows.UI.Xaml.Input;
 
 namespace MustacheDemo.App
@@ -63,9 +63,8 @@ namespace MustacheDemo.App
 
         private void DataEntry_OnDoubleTapped(object sender, DoubleTappedRoutedEventArgs e)
         {
-            var listViewItemPresenter = e.OriginalSource as ListViewItemPresenter;
-
-            var keyValue = listViewItemPresenter?.Content as ContextEntry;
+            var frameworkElement = e.OriginalSource as FrameworkElement;
+            var keyValue = frameworkElement?.DataContext as ContextEntry;
             if (keyValue == null) return;
 
             e.Handled = true;

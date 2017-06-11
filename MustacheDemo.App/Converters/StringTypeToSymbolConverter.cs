@@ -29,19 +29,21 @@ using Windows.UI.Xaml.Media;
 
 namespace MustacheDemo.App.Converters
 {
-    class TypeToSymbolConverter : IValueConverter
+    class StringTypeToSymbolConverter : IValueConverter
     {
+        private static readonly string StringTypeName = typeof(string).FullName;
+        private static readonly string IntTypeName = typeof(int).FullName;
+        private static readonly string DecimalTypeName = typeof(decimal).FullName;
+        private static readonly string ListTypeName = typeof(List<object>).FullName;
+
         public object Convert(object value, Type targetType, object parameter, string language)
         {
-            var type = value as Type;
-            if (targetType == typeof(string))
-            {
-                return type != null ? TypeToSymbolString(type) : TypeToSymbolString(value);
-            }
-            if (targetType == typeof(FontFamily))
-            {
-                return type != null ? TypeToFontFamily(type) : TypeToFontFamily(value);
-            }
+            var s = value as string;
+            if (s == null) return null;
+
+            if (targetType == typeof(string)) return StringTypeToSymbol(s);
+            if (targetType == typeof(FontFamily)) return StringTypeToFontFamily(s);
+
             return null;
         }
 
@@ -50,28 +52,18 @@ namespace MustacheDemo.App.Converters
             return value;
         }
 
-        public static string TypeToSymbolString(object value)
+        public static string StringTypeToSymbol(string type)
         {
-            return TypeToSymbolString(value.GetType());
-        }
-
-        public static string TypeToSymbolString(Type type)
-        {
-            if (type == typeof(string)) return "Abc";
-            if (type == typeof(int)) return "###";
-            if (type == typeof(decimal)) return "#.##";
-            if (type == typeof(List<object>)) return "";
+            if (type == StringTypeName) return "Abc";
+            if (type == IntTypeName) return "###";
+            if (type == DecimalTypeName) return "#.##";
+            if (type == ListTypeName) return "";
             return "?";
         }
 
-        public static FontFamily TypeToFontFamily(object value)
+        public static FontFamily StringTypeToFontFamily(string type)
         {
-            return TypeToFontFamily(value.GetType());
-        }
-
-        public static FontFamily TypeToFontFamily(Type type)
-        {
-            return type == typeof(List<object>) ? new FontFamily("Segoe MDL2 Assets") : FontFamily.XamlAutoFontFamily;
+            return type == ListTypeName ? new FontFamily("Segoe MDL2 Assets") : FontFamily.XamlAutoFontFamily;
         }
     }
 }
