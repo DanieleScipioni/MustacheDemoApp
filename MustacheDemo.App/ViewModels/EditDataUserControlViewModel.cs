@@ -43,6 +43,19 @@ namespace MustacheDemo.App.ViewModels
         private static readonly List<string> ManagedTypes = (from t in InternalTypes
                                                              select t.FullName).ToList();
 
+        #region Backing fields
+
+        private int _selectedTypeIndex;
+        private string _stringValue;
+        private bool _boolValue;
+        private bool _isValueValid;
+        private bool _toggleSwitchVisible;
+        private bool _textBoxVisible;
+
+        #endregion
+
+        #region Binding properties
+
         public object Value { get; private set; }
 
         public string Key { get; set; }
@@ -51,7 +64,6 @@ namespace MustacheDemo.App.ViewModels
 
         public List<string> Types => ManagedTypes;
 
-        private int _selectedTypeIndex;
         public int SelectedTypeIndex
         {
             get { return _selectedTypeIndex; }
@@ -59,12 +71,15 @@ namespace MustacheDemo.App.ViewModels
             {
                 if (!SetProperty(ref _selectedTypeIndex, value)) return;
 
-                ToggleSwitchVisible = InternalTypes[_selectedTypeIndex] == typeof(bool);
+                Type selectedType = InternalTypes[_selectedTypeIndex];
+
+                ToggleSwitchVisible = selectedType == typeof(bool);
+                TextBoxVisible = selectedType != typeof(bool) && selectedType != typeof(List<object>);
+
                 EvaluateValueAndType();
             }
         }
 
-        private string _stringValue;
         public string StringValue
         {
             get { return _stringValue; }
@@ -76,8 +91,6 @@ namespace MustacheDemo.App.ViewModels
                 }
             }
         }
-
-        private bool _boolValue;
         public bool BoolValue
         {
             get { return _boolValue; }
@@ -90,35 +103,31 @@ namespace MustacheDemo.App.ViewModels
             }
         }
 
-        private bool _isValueValid;
         public bool IsValueValid
         {
             get { return _isValueValid; }
             private set { SetProperty(ref _isValueValid, value); }
         }
 
-        private bool _toggleSwitchVisible;
-
         public bool ToggleSwitchVisible
         {
             get { return _toggleSwitchVisible; }
-            private set
-            {
-                if (SetProperty(ref _toggleSwitchVisible, value))
-                {
-                    OnPropertyChangedByName(nameof(TextBoxVisible));
-                }
-            }
+            private set { SetProperty(ref _toggleSwitchVisible, value); }
         }
 
-        public bool TextBoxVisible => !_toggleSwitchVisible;
+        public bool TextBoxVisible
+        {
+            get { return _textBoxVisible; }
+            set { SetProperty(ref _textBoxVisible, value); }
+        }
+
+        #endregion
 
         public EditDataUserControlViewModel() : this(null, null, true) {}
 
         public EditDataUserControlViewModel(string key, object value, bool canEditKey)
         {
-            //Types = (from type in ManagedTypes select type.Name).ToList();
-            KeyReadOnly = canEditKey;
+            KeyReadOnly = !canEditKey;
             if (value == null)
             {
                 _selectedTypeIndex = -1;
@@ -129,6 +138,8 @@ namespace MustacheDemo.App.ViewModels
                 _selectedTypeIndex = InternalTypes.IndexOf(selectedType);
 
                 ToggleSwitchVisible = selectedType == typeof(bool);
+                TextBoxVisible = selectedType != typeof(bool) && selectedType != typeof(List<object>);
+
                 if (ToggleSwitchVisible)
                 {
                     _boolValue = (bool) value;
@@ -171,6 +182,11 @@ namespace MustacheDemo.App.ViewModels
             {
                 IsValueValid = true;
                 Value = _boolValue;
+            }
+            else if (selectedType == typeof(List<object>))
+            {
+                IsValueValid = true;
+                Value = new List<object>();
             }
             else
             {

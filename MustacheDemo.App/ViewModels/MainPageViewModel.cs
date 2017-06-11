@@ -236,7 +236,7 @@ Well, {{TaxedValue}} {{Currency}}, after taxes.
             var listContext = currentContext as IList<object>;
 
             var tuple = new Tuple<string, object>(contextEntry.Key, contextEntry.Value);
-            Tuple<string, object> newTuple = await _dataService.EditData(tuple, listContext != null);
+            Tuple<string, object> newTuple = await _dataService.EditData(tuple, /*canEditKey*/listContext == null);
             if (newTuple == null) return;
 
             if (newTuple.Item2.GetType() == tuple.Item2.GetType())
