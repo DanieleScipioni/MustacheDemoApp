@@ -38,11 +38,13 @@
     <Page.Resources>
         <converters:ValueConverter x:Key="ValueConverter"/>
 
-        <GridLength x:Key="GridLength">62</GridLength>
+        <GridLength x:Key="GridLength">68</GridLength>
 
         <Style x:Key="LocalTextBlockButtonStyle" TargetType="Button" BasedOn="{StaticResource TextBlockButtonStyle}">
-            <Setter Property="HorizontalAlignment" Value="Center"/>
+            <Setter Property="Padding" Value="0"/>
             <Setter Property="Margin" Value="0,0,12,0"/>
+            <Setter Property="HorizontalAlignment" Value="Stretch"/>
+            <Setter Property="VerticalAlignment" Value="Stretch"/>
         </Style>
 
         <DataTemplate x:Key="StringDataTemplate" x:DataType="viewModels:ContextEntry">
@@ -132,6 +134,7 @@
                     <ListView.ItemContainerStyle>
                         <Style TargetType="ListViewItem">
                             <Setter Property="HorizontalContentAlignment" Value="Stretch"/>
+                            <Setter Property="VerticalContentAlignment" Value="Stretch"/>
                         </Style>
                     </ListView.ItemContainerStyle>
                 </ListView>
