@@ -30,6 +30,6 @@
     xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
     xmlns:app="using:MustacheDemo.App">
     <Application.Resources>
-        <app:ViewModelLocator x:Name="ViewModelLocator"/>
+        <app:ViewModelLocator x:Key="ViewModelLocator"/>
     </Application.Resources>
 </Application>
