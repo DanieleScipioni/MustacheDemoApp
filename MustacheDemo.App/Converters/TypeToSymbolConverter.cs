@@ -26,6 +26,7 @@ using System;
 using System.Collections.Generic;
 using Windows.UI.Xaml.Data;
 using Windows.UI.Xaml.Media;
+using MustacheDemo.Core.Data;
 
 namespace MustacheDemo.App.Converters
 {
@@ -36,11 +37,13 @@ namespace MustacheDemo.App.Converters
             var type = value as Type;
             if (targetType == typeof(string))
             {
-                return type != null ? TypeToSymbolString(type) : TypeToSymbolString(value);
+                return type != null
+                    ? DataTypes.TypeToSymbolString(type)
+                    : DataTypes.TypeToSymbolString(value.GetType());
             }
             if (targetType == typeof(FontFamily))
             {
-                return type != null ? TypeToFontFamily(type) : TypeToFontFamily(value);
+                return type != null ? DataTypes.TypeToFontFamily(type) : DataTypes.TypeToFontFamily(value.GetType());
             }
             return null;
         }
@@ -48,30 +51,6 @@ namespace MustacheDemo.App.Converters
         public object ConvertBack(object value, Type targetType, object parameter, string language)
         {
             return value;
-        }
-
-        public static string TypeToSymbolString(object value)
-        {
-            return TypeToSymbolString(value.GetType());
-        }
-
-        public static string TypeToSymbolString(Type type)
-        {
-            if (type == typeof(string)) return "Abc";
-            if (type == typeof(int)) return "###";
-            if (type == typeof(decimal)) return "#.##";
-            if (type == typeof(List<object>)) return "";
-            return "?";
-        }
-
-        public static FontFamily TypeToFontFamily(object value)
-        {
-            return TypeToFontFamily(value.GetType());
-        }
-
-        public static FontFamily TypeToFontFamily(Type type)
-        {
-            return type == typeof(List<object>) ? new FontFamily("Segoe MDL2 Assets") : FontFamily.XamlAutoFontFamily;
         }
     }
 }

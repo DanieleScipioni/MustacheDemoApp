@@ -22,27 +22,22 @@
 // SOFTWARE.
 // ******************************************************************************
 
+using MustacheDemo.Core.Data;
 using System;
-using System.Collections.Generic;
 using Windows.UI.Xaml.Data;
 using Windows.UI.Xaml.Media;
 
 namespace MustacheDemo.App.Converters
 {
-    class StringTypeToSymbolConverter : IValueConverter
+    internal class StringTypeToSymbolConverter : IValueConverter
     {
-        private static readonly string StringTypeName = typeof(string).FullName;
-        private static readonly string IntTypeName = typeof(int).FullName;
-        private static readonly string DecimalTypeName = typeof(decimal).FullName;
-        private static readonly string ListTypeName = typeof(List<object>).FullName;
-
         public object Convert(object value, Type targetType, object parameter, string language)
         {
             var s = value as string;
             if (s == null) return null;
 
-            if (targetType == typeof(string)) return StringTypeToSymbol(s);
-            if (targetType == typeof(FontFamily)) return StringTypeToFontFamily(s);
+            if (targetType == typeof(string)) return DataTypes.StringTypeToSymbol(s);
+            if (targetType == typeof(FontFamily)) return DataTypes.StringTypeToFontFamily(s);
 
             return null;
         }
@@ -50,20 +45,6 @@ namespace MustacheDemo.App.Converters
         public object ConvertBack(object value, Type targetType, object parameter, string language)
         {
             return value;
-        }
-
-        public static string StringTypeToSymbol(string type)
-        {
-            if (type == StringTypeName) return "Abc";
-            if (type == IntTypeName) return "###";
-            if (type == DecimalTypeName) return "#.##";
-            if (type == ListTypeName) return "";
-            return "?";
-        }
-
-        public static FontFamily StringTypeToFontFamily(string type)
-        {
-            return type == ListTypeName ? new FontFamily("Segoe MDL2 Assets") : FontFamily.XamlAutoFontFamily;
         }
     }
 }

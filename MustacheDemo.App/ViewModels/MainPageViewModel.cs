@@ -33,12 +33,6 @@ using Mustache;
 
 namespace MustacheDemo.App.ViewModels
 {
-    internal interface IContextEntryDataService
-    {
-        void UpdateDataValue(string key, object value);
-        void EditContextEntry(ContextEntry contextEntry);
-    }
-
     internal class MainPageViewModel : BindableBase, IContextEntryDataService
     {
         #region Propery backing fields
@@ -52,7 +46,7 @@ namespace MustacheDemo.App.ViewModels
 
         public string Template
         {
-            get { return _template; }
+            get => _template;
             set
             {
                 if (SetProperty(ref _template, value))
@@ -69,8 +63,8 @@ namespace MustacheDemo.App.ViewModels
 
         public bool RenderCompleted
         {
-            get { return _renderCompleted; }
-            private set { SetProperty(ref _renderCompleted, value); }
+            get => _renderCompleted;
+            private set => SetProperty(ref _renderCompleted, value);
         }
 
         public ObservableCollection<object> Data { get; } = new ObservableCollection<object>();
@@ -117,6 +111,10 @@ namespace MustacheDemo.App.ViewModels
                 {"InCa", true},
                 {"List", new List<object> {
                     "a", "b", 1
+                }},
+                {"d", new Dictionary<string, object> {
+                    {"e","funge"},
+                    { "tt", true}
                 }}
             };
 
@@ -128,7 +126,12 @@ You have just won {{Value}} {{Currency}}!
 {{#InCa}}
 Well, {{TaxedValue}} {{Currency}}, after taxes.
 {{/InCa}}
-{{#List}}{{.}}{{/List}}";
+{{#List}}
+{{.}}
+{{/List}}
+{{#d}}
+{{e}}: {{tt}}
+{{/d}}";
 
             SelectedIndex = -1;
 
@@ -243,15 +246,19 @@ Well, {{TaxedValue}} {{Currency}}, after taxes.
 
         public async void EditContextEntry(ContextEntry contextEntry)
         {
-            var list = contextEntry.Value as IList<object>;
-            if (list != null)
+            if (contextEntry.Value is IList<object> list)
             {
                 SetContext(list);
                 return;
             }
+            else if (contextEntry.Value is Dictionary<string, object> dictionary)
+            {
+                SetContext(dictionary);
+                return;
+            }
 
             object currentContext = _dataStack.Peek();
-            var dictionary = currentContext as IDictionary<string, object>;
+            var dictionaryContext = currentContext as IDictionary<string, object>;
             var listContext = currentContext as IList<object>;
 
             var tuple = new Tuple<string, object>(contextEntry.Key, contextEntry.Value);
@@ -271,9 +278,9 @@ Well, {{TaxedValue}} {{Currency}}, after taxes.
             }
 
 
-            if (dictionary != null)
+            if (dictionaryContext != null)
             {
-                SetDictionaryData(dictionary, tuple, newTuple);
+                SetDictionaryData(dictionaryContext, tuple, newTuple);
             }
 
             if (listContext == null) return;
@@ -313,8 +320,7 @@ Well, {{TaxedValue}} {{Currency}}, after taxes.
 
         private void UpdateContext(object context)
         {
-            var dictionary = context as Dictionary<string, object>;
-            if (dictionary != null)
+            if (context is Dictionary<string, object> dictionary)
             {
                 Data.Clear();
                 foreach (ContextEntry keyValue in DataToList(dictionary))
@@ -323,8 +329,7 @@ Well, {{TaxedValue}} {{Currency}}, after taxes.
                 }
             }
 
-            var list = context as List<object>;
-            if (list != null)
+            if (context is List<object> list)
             {
                 List<ContextEntry> keyValues = list.Select((item, index) => new ContextEntry(index.ToString(), item, this)).ToList();
                 Data.Clear();

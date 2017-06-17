@@ -31,17 +31,6 @@ namespace MustacheDemo.App.ViewModels
 {
     public class EditDataUserControlViewModel : BindableBase
     {
-        private static readonly List<Type> InternalTypes = new List<Type>(5)
-        {
-            typeof(int),
-            typeof(decimal),
-            typeof(bool),
-            typeof(string),
-            typeof(List<object>)
-        };
-
-        private static readonly List<string> ManagedTypes = (from t in InternalTypes
-                                                             select t.FullName).ToList();
 
         #region Backing fields
 
@@ -62,19 +51,17 @@ namespace MustacheDemo.App.ViewModels
 
         public bool NeedsKey { get; }
 
-        public List<string> Types => ManagedTypes;
+        public List<string> Types { get; private set; }
 
         public int SelectedTypeIndex
         {
-            get { return _selectedTypeIndex; }
+            get => _selectedTypeIndex;
             set
             {
                 if (!SetProperty(ref _selectedTypeIndex, value)) return;
 
-                Type selectedType = InternalTypes[_selectedTypeIndex];
-
-                ToggleSwitchVisible = selectedType == typeof(bool);
-                TextBoxVisible = selectedType != typeof(bool) && selectedType != typeof(List<object>);
+                Type selectedType = _internalTypes[_selectedTypeIndex];
+                SetupValueFieldsVisibility(selectedType);
 
                 EvaluateValueAndType();
             }
@@ -82,7 +69,7 @@ namespace MustacheDemo.App.ViewModels
 
         public string StringValue
         {
-            get { return _stringValue; }
+            get => _stringValue;
             set
             {
                 if (SetProperty(ref _stringValue, value))
@@ -91,9 +78,10 @@ namespace MustacheDemo.App.ViewModels
                 }
             }
         }
+
         public bool BoolValue
         {
-            get { return _boolValue; }
+            get => _boolValue;
             set
             {
                 if (SetProperty(ref _boolValue, value))
@@ -105,51 +93,90 @@ namespace MustacheDemo.App.ViewModels
 
         public bool IsValueValid
         {
-            get { return _isValueValid; }
-            private set { SetProperty(ref _isValueValid, value); }
+            get => _isValueValid;
+            private set => SetProperty(ref _isValueValid, value);
         }
 
         public bool ToggleSwitchVisible
         {
-            get { return _toggleSwitchVisible; }
-            private set { SetProperty(ref _toggleSwitchVisible, value); }
+            get => _toggleSwitchVisible;
+            private set => SetProperty(ref _toggleSwitchVisible, value);
         }
 
         public bool TextBoxVisible
         {
-            get { return _textBoxVisible; }
-            set { SetProperty(ref _textBoxVisible, value); }
+            get => _textBoxVisible;
+            private set => SetProperty(ref _textBoxVisible, value);
         }
 
         #endregion
+
+        private List<Type> _internalTypes;
 
         public EditDataUserControlViewModel(bool canEditKey) : this(null, null, canEditKey) {}
 
         public EditDataUserControlViewModel(string key, object value, bool withKey)
         {
             NeedsKey = withKey;
+            Type selectedType;
             if (value == null)
             {
+                selectedType = null;
                 _selectedTypeIndex = -1;
             }
             else
             {
-                Type selectedType = value.GetType();
-                _selectedTypeIndex = InternalTypes.IndexOf(selectedType);
-
-                ToggleSwitchVisible = selectedType == typeof(bool);
-                TextBoxVisible = selectedType != typeof(bool) && selectedType != typeof(List<object>);
-
-                if (ToggleSwitchVisible)
-                {
-                    _boolValue = (bool) value;
-                }
-
-                Value = value;
-                _stringValue = value.ToString();
-                EvaluateValueAndType();
+                selectedType = value.GetType();
             }
+            SetupTypes(selectedType);
+            _selectedTypeIndex = _internalTypes.IndexOf(selectedType);
+
+            SetupValueFieldsVisibility(selectedType);
+
+            if (value is bool) _boolValue = (bool) value;
+            Value = value;
+            _stringValue = value?.ToString();
+
+            EvaluateValueAndType();
             Key = key;
+        }
+
+        private void SetupTypes(Type selectedType)
+        {
+            if (selectedType == null)
+            {
+                _internalTypes = new List<Type>(5)
+                {
+                    typeof(int),
+                    typeof(decimal),
+                    typeof(bool),
+                    typeof(string),
+                    typeof(List<object>),
+                    typeof(Dictionary<string, object>)
+                };
+            }
+            else if (selectedType == typeof(List<object>) || selectedType == typeof(Dictionary<string, object>))
+            {
+                _internalTypes = new List<Type>(1) {selectedType};
+            }
+            else
+            {
+                _internalTypes = new List<Type>(5)
+                {
+                    typeof(int),
+                    typeof(decimal),
+                    typeof(bool),
+                    typeof(string),
+                };
+            }
+            Types = (from t in _internalTypes
+                     select t.FullName).ToList();
+        }
+
+        private void SetupValueFieldsVisibility(Type selectedType)
+        {
+            ToggleSwitchVisible = selectedType == typeof(bool);
+            TextBoxVisible = selectedType != typeof(bool) && selectedType != typeof(List<object>) && selectedType != typeof(Dictionary<string, object>);
         }
 
         public bool IsInputValid()
@@ -159,11 +186,12 @@ namespace MustacheDemo.App.ViewModels
 
         private void EvaluateValueAndType()
         {
-            Type selectedType = InternalTypes[_selectedTypeIndex];
+            if (_selectedTypeIndex == -1) return;
+
+            Type selectedType = _internalTypes[_selectedTypeIndex];
             if (selectedType == typeof(int))
             {
-                int parsed;
-                IsValueValid = int.TryParse(_stringValue, out parsed);
+                IsValueValid = int.TryParse(_stringValue, out int parsed);
                 if (_isValueValid)
                 {
                     Value = parsed;
@@ -171,8 +199,7 @@ namespace MustacheDemo.App.ViewModels
             }
             else if (selectedType == typeof(decimal))
             {
-                decimal parsed;
-                IsValueValid = decimal.TryParse(_stringValue, out parsed);
+                IsValueValid = decimal.TryParse(_stringValue, out decimal parsed);
                 if (_isValueValid)
                 {
                     Value = parsed;
@@ -187,6 +214,11 @@ namespace MustacheDemo.App.ViewModels
             {
                 IsValueValid = true;
                 Value = new List<object>();
+            }
+            else if (selectedType == typeof(Dictionary<string, object>))
+            {
+                IsValueValid = true;
+                Value = new Dictionary<string, object>();
             }
             else
             {

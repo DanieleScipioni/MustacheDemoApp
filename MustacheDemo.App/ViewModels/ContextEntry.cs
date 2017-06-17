@@ -22,12 +22,19 @@
 // SOFTWARE.
 // ******************************************************************************
 
-using MustacheDemo.App.Converters;
 using MustacheDemo.Core;
+using MustacheDemo.Core.Data;
+using System;
 using Windows.UI.Xaml.Media;
 
 namespace MustacheDemo.App.ViewModels
 {
+    internal interface IContextEntryDataService
+    {
+        void UpdateDataValue(string key, object value);
+        void EditContextEntry(ContextEntry contextEntry);
+    }
+
     internal class ContextEntry : BindableBase
     {
         private readonly IContextEntryDataService _contextEntryDataService;
@@ -43,13 +50,13 @@ namespace MustacheDemo.App.ViewModels
 
         public string Key
         {
-            get { return _key; }
-            set { SetProperty(ref _key, value); }
+            get => _key;
+            set => SetProperty(ref _key, value);
         }
 
         public object Value
         {
-            get { return _value; }
+            get => _value;
             set
             {
                 if (SetProperty(ref _value, value))
@@ -73,8 +80,9 @@ namespace MustacheDemo.App.ViewModels
             _value = value;
             _contextEntryDataService = contextEntryDataService;
             EditCommand = new DelegateCommand(EditCommandImpl);
-            IconText = TypeToSymbolConverter.TypeToSymbolString(_value);
-            FontFamily = TypeToSymbolConverter.TypeToFontFamily(_value);
+            Type type = _value.GetType();
+            IconText = DataTypes.TypeToSymbolString(type);
+            FontFamily = DataTypes.TypeToFontFamily(type);
         }
 
         private void EditCommandImpl(object parameter)

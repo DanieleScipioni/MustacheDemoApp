@@ -24,23 +24,22 @@
 
 using System;
 using System.Collections;
+using System.Collections.Generic;
 using Windows.UI.Xaml.Data;
 
 namespace MustacheDemo.App.Converters
 {
-    class ValueConverter : IValueConverter
+    internal class ValueConverter : IValueConverter
     {
         public object Convert(object value, Type targetType, object parameter, string language)
         {
             if (targetType == typeof(bool) || targetType == typeof(bool?))
             {
-                bool parsed;
-                return bool.TryParse(value.ToString(), out parsed) && parsed;
+                return bool.TryParse(value.ToString(), out bool parsed) && parsed;
             }
 
-            var list = value as IList;
-            if (list != null) return list.Count.ToString();
-
+            if (value is IList list) return list.Count.ToString();
+            if (value is Dictionary<string, object> dictionary) return dictionary.Count.ToString();
             return value?.ToString();
         }
 
