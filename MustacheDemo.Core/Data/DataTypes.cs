@@ -33,8 +33,8 @@ namespace MustacheDemo.Core.Data
         private static readonly Type StringType = typeof(string);
         private static readonly Type IntType = typeof(int);
         private static readonly Type DecimalType = typeof(decimal);
-        public static readonly Type ListType = typeof(List<object>);
-        public static readonly Type DictionaryType = typeof(Dictionary<string, object>);
+        private static readonly Type ListType = typeof(List<object>);
+        private static readonly Type DictionaryType = typeof(Dictionary<string, object>);
 
         private static readonly string StringTypeName = StringType.FullName;
         private static readonly string IntTypeName = IntType.FullName;

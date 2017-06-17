@@ -22,11 +22,10 @@
 // SOFTWARE.
 // ******************************************************************************
 
+using MustacheDemo.Core.Data;
 using System;
-using System.Collections.Generic;
 using Windows.UI.Xaml.Data;
 using Windows.UI.Xaml.Media;
-using MustacheDemo.Core.Data;
 
 namespace MustacheDemo.App.Converters
 {

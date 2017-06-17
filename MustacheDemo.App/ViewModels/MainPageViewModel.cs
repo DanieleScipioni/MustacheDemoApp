@@ -222,12 +222,12 @@ Well, {{TaxedValue}} {{Currency}}, after taxes.
             dictionary.Remove(keyValue.Key);
         }
 
-        private bool UpCanExecute(object arg)
+        private bool UpCanExecute(object parameter)
         {
             return _dataStack.Count > 1;
         }
 
-        private void Up(object obj)
+        private void Up(object parameter)
         {
             ToParetContext();
         }

@@ -128,7 +128,11 @@
                          IsReadOnly="{x:Bind _viewModel.RenderCompleted, Mode=OneWay}"
                          PlaceholderText="Fill with your template" />
             </PivotItem>
-            <PivotItem Header="Data">
+            <PivotItem Header="Data"
+                       PointerPressed="UIElement_OnPointerPressed" PointerCanceled="UIElement_OnPointerCanceled"
+                       PointerCaptureLost="UIElement_OnPointerCaptureLost" PointerExited="UIElement_OnPointerExited"
+                       PointerReleased="UIElement_OnPointerReleased"
+                       >
                 <ListView ItemsSource="{x:Bind _viewModel.Data}" ItemTemplateSelector="{StaticResource DataDataTemplateSelector}"
                           SelectedIndex="{x:Bind _viewModel.SelectedIndex, Mode=TwoWay}" DoubleTapped="DataEntry_OnDoubleTapped">
                     <ListView.ItemContainerStyle>

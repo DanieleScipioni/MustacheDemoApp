@@ -23,6 +23,8 @@
 // ******************************************************************************
 
 using MustacheDemo.App.ViewModels;
+using System;
+using Windows.UI.Input;
 using Windows.UI.Xaml;
 using Windows.UI.Xaml.Controls;
 using Windows.UI.Xaml.Input;
@@ -37,7 +39,6 @@ namespace MustacheDemo.App
         {
             InitializeComponent();
             _viewModel = DataContext as MainPageViewModel;
-
             HiddenElementContainer.Children.Remove(TemplateCommandBar);
             HiddenElementContainer.Children.Remove(DataCommandBar);
         }
@@ -71,5 +72,45 @@ namespace MustacheDemo.App
 
             _viewModel.EditContextEntry(keyValue);
         }
+
+        #region Mouse Back Button
+
+        private bool _mouseBackButtonPressed;
+
+        private void UIElement_OnPointerPressed(object sender, PointerRoutedEventArgs e)
+        {
+            var uiElement = sender as UIElement;
+            if (uiElement == null) return;
+
+            PointerPoint currentPoint = e.GetCurrentPoint(uiElement);
+            _mouseBackButtonPressed = currentPoint.Properties.IsXButton1Pressed;
+        }
+
+        private void UIElement_OnPointerReleased(object sender, PointerRoutedEventArgs e)
+        {
+            if (!_mouseBackButtonPressed) return;
+            _mouseBackButtonPressed = false;
+            if (!_viewModel.UpCommand.CanExecute(null)) return;
+
+            _viewModel.UpCommand.Execute(null);
+            e.Handled = true;
+        }
+
+        private void UIElement_OnPointerCanceled(object sender, PointerRoutedEventArgs e)
+        {
+            _mouseBackButtonPressed = false;
+        }
+
+        private void UIElement_OnPointerCaptureLost(object sender, PointerRoutedEventArgs e)
+        {
+            _mouseBackButtonPressed = false;
+        }
+
+        private void UIElement_OnPointerExited(object sender, PointerRoutedEventArgs e)
+        {
+            _mouseBackButtonPressed = false;
+        }
+
+        #endregion
     }
 }
