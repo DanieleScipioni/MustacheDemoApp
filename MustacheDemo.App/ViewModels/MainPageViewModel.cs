@@ -261,12 +261,13 @@ Well, {{TaxedValue}} {{Currency}}, after taxes.
             var keyValue = Data[SelectedIndex] as ContextEntry;
             if (keyValue == null) return;
 
-            var dictionary = _dataStack.Peek().Value as IDictionary;
-            if (dictionary == null) return;
+            // store selectedIndex in a local variable because
+            // removing from Data cause SelectedIndex to be set to -1
+            int selectedIndex = SelectedIndex;
+            Data.RemoveAt(selectedIndex);
 
-            Data.RemoveAt(SelectedIndex);
-
-            dictionary.Remove(keyValue.Key);
+            if (_dataStack.Peek().Value is IDictionary dictionary) dictionary.Remove(keyValue.Key);
+            if (_dataStack.Peek().Value is List<object> list) list.RemoveAt(selectedIndex);
         }
 
         private bool UpCanExecute(object parameter)
