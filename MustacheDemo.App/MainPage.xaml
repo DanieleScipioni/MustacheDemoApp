@@ -124,6 +124,7 @@
                 <TextBox AcceptsReturn="True" 
                          ScrollViewer.HorizontalScrollBarVisibility="Visible"
                          ScrollViewer.VerticalScrollBarVisibility="Visible"
+                         BorderThickness="1"
                          TextChanged="TemplateTextBox_OnTextChanged"
                          Text="{x:Bind _viewModel.Template, Mode=OneWay}"
                          IsReadOnly="{x:Bind _viewModel.RenderCompleted, Mode=OneWay}"
