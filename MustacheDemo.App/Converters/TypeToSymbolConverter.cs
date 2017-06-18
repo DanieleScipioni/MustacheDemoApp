@@ -33,17 +33,9 @@ namespace MustacheDemo.App.Converters
     {
         public object Convert(object value, Type targetType, object parameter, string language)
         {
-            var type = value as Type;
-            if (targetType == typeof(string))
-            {
-                return type != null
-                    ? DataTypes.TypeToSymbolString(type)
-                    : DataTypes.TypeToSymbolString(value.GetType());
-            }
-            if (targetType == typeof(FontFamily))
-            {
-                return type != null ? DataTypes.TypeToFontFamily(type) : DataTypes.TypeToFontFamily(value.GetType());
-            }
+            Type type = value as Type ?? value.GetType();
+            if (targetType == typeof(string)) return DataTypes.TypeToSymbolString(type);
+            if (targetType == typeof(FontFamily)) return DataTypes.TypeToFontFamily(type);
             return null;
         }
 

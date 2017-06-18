@@ -81,9 +81,10 @@ namespace MustacheDemo.Core.Data
 
         public static FontFamily TypeToFontFamily(Type type)
         {
-            return type == ListType || type == DictionaryType
+            FontFamily typeToFontFamily = type == ListType || type == DictionaryType
                 ? new FontFamily("Segoe MDL2 Assets")
                 : FontFamily.XamlAutoFontFamily;
+            return typeToFontFamily;
         }
     }
 }

@@ -39,6 +39,7 @@ namespace MustacheDemo.App.ViewModels
 
         private string _template;
         private bool _renderCompleted;
+        private string _contextKey;
 
         #endregion
 
@@ -71,6 +72,20 @@ namespace MustacheDemo.App.ViewModels
 
         public int SelectedIndex { get; set; }
 
+        public string ContextKey
+        {
+            get => _contextKey;
+            set
+            {
+                if (SetProperty(ref _contextKey, value))
+                {
+                    OnPropertyChangedByName(nameof(Context));
+                }
+            }
+        }
+
+        public object Context => _dataStack.Peek().Value;
+
         public readonly DelegateCommand RenderCommand;
 
         public readonly DelegateCommand EditTemplateCommand;
@@ -88,7 +103,7 @@ namespace MustacheDemo.App.ViewModels
         private Dictionary<string, object> _data;
 
         private string _templateCache;
-        private readonly Stack<object> _dataStack;
+        private readonly Stack<KeyValuePair<string, object>> _dataStack;
         private bool _canRender;
         private readonly DataService _dataService;
 
@@ -118,7 +133,7 @@ namespace MustacheDemo.App.ViewModels
                 }}
             };
 
-            _dataStack = new Stack<object>();
+            _dataStack = new Stack<KeyValuePair<string, object>>();
 
             _canRender = true;
             _template = @"Hello {{Name}}
@@ -135,7 +150,7 @@ Well, {{TaxedValue}} {{Currency}}, after taxes.
 
             SelectedIndex = -1;
 
-            SetContext(_data);
+            SetContext("root", _data);
         }
 
         #region Command implementations
@@ -179,9 +194,9 @@ Well, {{TaxedValue}} {{Currency}}, after taxes.
 
         private async void AddData(object parameter)
         {
-            object currentContext = _dataStack.Peek();
-            var dictionary = currentContext as IDictionary;
-            var list = currentContext as IList;
+            KeyValuePair<string, object> currentContext = _dataStack.Peek();
+            var dictionary = currentContext.Value as IDictionary;
+            var list = currentContext.Value as IList;
 
             Tuple<string, object> tuple = await _dataService.NewData(list == null);
             if (tuple == null) return;
@@ -214,7 +229,7 @@ Well, {{TaxedValue}} {{Currency}}, after taxes.
             var keyValue = Data[SelectedIndex] as ContextEntry;
             if (keyValue == null) return;
 
-            var dictionary = _dataStack.Peek() as IDictionary;
+            var dictionary = _dataStack.Peek().Value as IDictionary;
             if (dictionary == null) return;
 
             Data.RemoveAt(SelectedIndex);
@@ -238,7 +253,7 @@ Well, {{TaxedValue}} {{Currency}}, after taxes.
 
         public void UpdateDataValue(string key, object value)
         {
-            var dictionary = _dataStack.Peek() as IDictionary;
+            var dictionary = _dataStack.Peek().Value as IDictionary;
             if (dictionary == null) return;
 
             dictionary[key] = value;
@@ -248,16 +263,16 @@ Well, {{TaxedValue}} {{Currency}}, after taxes.
         {
             if (contextEntry.Value is IList<object> list)
             {
-                SetContext(list);
+                SetContext(contextEntry.Key, list);
                 return;
             }
             else if (contextEntry.Value is Dictionary<string, object> dictionary)
             {
-                SetContext(dictionary);
+                SetContext(contextEntry.Key, dictionary);
                 return;
             }
 
-            object currentContext = _dataStack.Peek();
+            object currentContext = _dataStack.Peek().Value;
             var dictionaryContext = currentContext as IDictionary<string, object>;
             var listContext = currentContext as IList<object>;
 
@@ -307,14 +322,17 @@ Well, {{TaxedValue}} {{Currency}}, after taxes.
         private void ToParetContext()
         {
             _dataStack.Pop();
-            UpdateContext(_dataStack.Peek());
+            KeyValuePair<string, object> keyValuePair = _dataStack.Peek();
+            ContextKey = keyValuePair.Key;
+            UpdateContext(keyValuePair.Value);
             UpCommand.RaiseCanExecuteChanged();
         }
 
-        private void SetContext(object obj)
+        private void SetContext(string contextKey, object context)
         {
-            _dataStack.Push(obj);
-            UpdateContext(obj);
+            _dataStack.Push(new KeyValuePair<string, object>(contextKey, context));
+            ContextKey = contextKey;
+            UpdateContext(context);
             UpCommand.RaiseCanExecuteChanged();
         }
 

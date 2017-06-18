@@ -23,7 +23,6 @@
 // ******************************************************************************
 
 using MustacheDemo.App.ViewModels;
-using System;
 using Windows.UI.Input;
 using Windows.UI.Xaml;
 using Windows.UI.Xaml.Controls;
