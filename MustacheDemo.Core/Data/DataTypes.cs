@@ -24,67 +24,21 @@
 
 using System;
 using System.Collections.Generic;
-using Windows.UI.Xaml.Media;
 
 namespace MustacheDemo.Core.Data
 {
     public static class DataTypes
     {
-        private static readonly Type StringType = typeof(string);
-        private static readonly Type IntType = typeof(int);
-        private static readonly Type DecimalType = typeof(decimal);
-        private static readonly Type ListType = typeof(List<object>);
-        private static readonly Type DictionaryType = typeof(Dictionary<string, object>);
-
-        private static readonly string StringTypeName = StringType.FullName;
-        private static readonly string IntTypeName = IntType.FullName;
-        private static readonly string DecimalTypeName = DecimalType.FullName;
-        private static readonly string ListTypeName = ListType.FullName;
-        private static readonly string DictionaryTypeName = DictionaryType.FullName;
-
-        public static string TypeToSymbolString(Type type)
-        {
-            if (type == StringType) return "Abc";
-            if (type == IntType) return "###";
-            if (type == DecimalType) return "#.##";
-            if (type == ListType) return "";
-            if (type == DictionaryType) return "";
-            return "?";
-        }
-
-        public static string StringTypeToSymbol(string type)
-        {
-            if (type == StringTypeName) return "Abc";
-            if (type == IntTypeName) return "###";
-            if (type == DecimalTypeName) return "#.##";
-            if (type == ListTypeName) return "";
-            if (type == DictionaryTypeName) return "";
-            return "?";
-        }
-
-        public static string StringTypeToText(string type)
-        {
-            if (type == StringTypeName) return "String";
-            if (type == IntTypeName) return "Integer";
-            if (type == DecimalTypeName) return "Decimal";
-            if (type == ListTypeName) return "List";
-            if (type == DictionaryTypeName) return "Dictionary";
-            return "Boolean";
-        }
-
-        public static FontFamily StringTypeToFontFamily(string type)
-        {
-            return type == ListTypeName || type == DictionaryTypeName
-                ? new FontFamily("Segoe MDL2 Assets")
-                : FontFamily.XamlAutoFontFamily;
-        }
-
-        public static FontFamily TypeToFontFamily(Type type)
-        {
-            FontFamily typeToFontFamily = type == ListType || type == DictionaryType
-                ? new FontFamily("Segoe MDL2 Assets")
-                : FontFamily.XamlAutoFontFamily;
-            return typeToFontFamily;
-        }
+        public static readonly Type StringType = typeof(string);
+        public static readonly Type IntType = typeof(int);
+        public static readonly Type DecimalType = typeof(decimal);
+        public static readonly Type ListType = typeof(List<object>);
+        public static readonly Type DictionaryType = typeof(Dictionary<string, object>);
+        
+        public static readonly string StringTypeName = StringType.FullName;
+        public static readonly string IntTypeName = IntType.FullName;
+        public static readonly string DecimalTypeName = DecimalType.FullName;
+        public static readonly string ListTypeName = ListType.FullName;
+        public static readonly string DictionaryTypeName = DictionaryType.FullName;
     }
 }

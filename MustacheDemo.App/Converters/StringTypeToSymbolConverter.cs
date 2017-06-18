@@ -22,7 +22,6 @@
 // SOFTWARE.
 // ******************************************************************************
 
-using MustacheDemo.Core.Data;
 using System;
 using Windows.UI.Xaml.Data;
 using Windows.UI.Xaml.Media;
@@ -36,8 +35,8 @@ namespace MustacheDemo.App.Converters
             var s = value as string;
             if (s == null) return null;
 
-            if (targetType == typeof(string)) return DataTypes.StringTypeToSymbol(s);
-            if (targetType == typeof(FontFamily)) return DataTypes.StringTypeToFontFamily(s);
+            if (targetType == typeof(string)) return TypeToSymbolConverter.StringTypeToSymbol(s);
+            if (targetType == typeof(FontFamily)) return TypeToSymbolConverter.StringTypeToFontFamily(s);
 
             return null;
         }

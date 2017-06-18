@@ -26,6 +26,7 @@ using MustacheDemo.Core;
 using MustacheDemo.Core.Data;
 using System;
 using Windows.UI.Xaml.Media;
+using MustacheDemo.App.Converters;
 
 namespace MustacheDemo.App.ViewModels
 {
@@ -81,8 +82,8 @@ namespace MustacheDemo.App.ViewModels
             _contextEntryDataService = contextEntryDataService;
             EditCommand = new DelegateCommand(EditCommandImpl);
             Type type = _value.GetType();
-            IconText = DataTypes.TypeToSymbolString(type);
-            FontFamily = DataTypes.TypeToFontFamily(type);
+            IconText = TypeToSymbolConverter.TypeToSymbolString(type);
+            FontFamily = TypeToSymbolConverter.TypeToFontFamily(type);
         }
 
         private void EditCommandImpl(object parameter)
