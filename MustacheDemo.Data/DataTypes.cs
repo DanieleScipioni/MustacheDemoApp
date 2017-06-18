@@ -25,7 +25,7 @@
 using System;
 using System.Collections.Generic;
 
-namespace MustacheDemo.Core.Data
+namespace MustacheDemo.Data
 {
     public static class DataTypes
     {

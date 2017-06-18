@@ -22,7 +22,7 @@
 // SOFTWARE.
 // ******************************************************************************
 
-using MustacheDemo.Core.Data;
+using MustacheDemo.Data;
 using System;
 using Windows.UI.Xaml.Data;
 using Windows.UI.Xaml.Media;

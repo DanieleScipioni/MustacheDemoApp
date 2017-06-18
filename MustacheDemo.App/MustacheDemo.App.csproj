@@ -157,6 +157,10 @@
       <Project>{09517cc9-e27e-4b70-854b-454e263ffb63}</Project>
       <Name>MustacheDemo.Core</Name>
     </ProjectReference>
+    <ProjectReference Include="..\MustacheDemo.Data\MustacheDemo.Data.csproj">
+      <Project>{e4c7e67d-7aa0-458a-b9e0-37bed5ba3735}</Project>
+      <Name>MustacheDemo.Data</Name>
+    </ProjectReference>
   </ItemGroup>
   <ItemGroup>
     <PackageReference Include="Microsoft.NETCore.UniversalWindowsPlatform">

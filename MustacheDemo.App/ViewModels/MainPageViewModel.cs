@@ -248,7 +248,7 @@ Well, {{TaxedValue}} {{Currency}}, after taxes.
 
         private void EditSelectedData(object parameter)
         {
-            var keyValue = Data[SelectedIndex] as ContextEntry;
+            var keyValue = Data[SelectedIndex];
             if (keyValue == null) return;
 
             EditContextEntry(keyValue);
@@ -258,7 +258,7 @@ Well, {{TaxedValue}} {{Currency}}, after taxes.
         {
             if (SelectedIndex == -1) return;
 
-            var keyValue = Data[SelectedIndex] as ContextEntry;
+            var keyValue = Data[SelectedIndex];
             if (keyValue == null) return;
 
             // store selectedIndex in a local variable because
