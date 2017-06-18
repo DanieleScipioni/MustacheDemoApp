@@ -141,10 +141,6 @@
                     </Grid.RowDefinitions>
                     <StackPanel Orientation="Horizontal"
                                 Margin="12,0" Padding="0,12" HorizontalAlignment="Center">
-                        <!--<Grid.ColumnDefinitions>
-                            <ColumnDefinition Width="{StaticResource GridLength}"/>
-                            <ColumnDefinition Width="*"/>
-                        </Grid.ColumnDefinitions>-->
                         <TextBlock Text="Context: "/>
                         <TextBlock VerticalAlignment="Center" HorizontalAlignment="Center" Margin="12,0"
                                    Text="{x:Bind _viewModel.Context, Mode=OneWay, Converter={StaticResource TypeToSymbolConverter}}"
@@ -154,8 +150,10 @@
                     <Line Grid.Row="1" Stretch="Fill" Stroke="{ThemeResource SystemControlForegroundAccentBrush}" 
                           X1="0" Y1="0" X2="1" Y2="0"/>
                     <ListView Grid.Row="2"
-                          ItemsSource="{x:Bind _viewModel.Data}" ItemTemplateSelector="{StaticResource DataDataTemplateSelector}"
-                          SelectedIndex="{x:Bind _viewModel.SelectedIndex, Mode=TwoWay}" DoubleTapped="DataEntry_OnDoubleTapped">
+                              ItemsSource="{x:Bind _viewModel.Data}" ItemTemplateSelector="{StaticResource DataDataTemplateSelector}"
+                              SelectedIndex="{x:Bind _viewModel.SelectedIndex, Mode=TwoWay}" DoubleTapped="DataEntry_OnDoubleTapped"
+                              CanReorderItems="{x:Bind _viewModel.CanReorderItems, Mode=OneWay}" AllowDrop="True"
+                              CanDragItems="True" DragItemsStarting="ListViewBase_OnDragItemsStarting" DragItemsCompleted="ListViewBase_OnDragItemsCompleted">
                         <ListView.ItemContainerStyle>
                             <Style TargetType="ListViewItem">
                                 <Setter Property="HorizontalContentAlignment" Value="Stretch"/>

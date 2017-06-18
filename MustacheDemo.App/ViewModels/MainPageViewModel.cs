@@ -22,6 +22,7 @@
 // SOFTWARE.
 // ******************************************************************************
 
+using Mustache;
 using MustacheDemo.App.Bridges;
 using MustacheDemo.Core;
 using System;
@@ -29,7 +30,6 @@ using System.Collections;
 using System.Collections.Generic;
 using System.Collections.ObjectModel;
 using System.Linq;
-using Mustache;
 
 namespace MustacheDemo.App.ViewModels
 {
@@ -40,6 +40,7 @@ namespace MustacheDemo.App.ViewModels
         private string _template;
         private bool _renderCompleted;
         private string _contextKey;
+        private bool _canReorderItems;
 
         #endregion
 
@@ -75,12 +76,27 @@ namespace MustacheDemo.App.ViewModels
         public string ContextKey
         {
             get => _contextKey;
-            set
+            private set
             {
                 if (SetProperty(ref _contextKey, value))
                 {
                     OnPropertyChangedByName(nameof(Context));
                 }
+            }
+        }
+
+        public bool CanReorderItems
+        {
+            get => _canReorderItems;
+            private set => SetProperty(ref _canReorderItems, value);
+        }
+
+        public bool Reordering
+        {
+            set
+            {
+                if (value) _notifyCollectionChangedReorder.StartTracking();
+                else _notifyCollectionChangedReorder.StopTracking();
             }
         }
 
@@ -102,10 +118,11 @@ namespace MustacheDemo.App.ViewModels
 
         private Dictionary<string, object> _data;
 
-        private string _templateCache;
-        private readonly Stack<KeyValuePair<string, object>> _dataStack;
-        private bool _canRender;
         private readonly DataService _dataService;
+        private readonly Stack<KeyValuePair<string, object>> _dataStack;
+        private string _templateCache;
+        private bool _canRender;
+        private readonly NotifyCollectionChangedReorder _notifyCollectionChangedReorder;
 
         public MainPageViewModel(DataService dataService)
         {
@@ -151,6 +168,14 @@ Well, {{TaxedValue}} {{Currency}}, after taxes.
             SelectedIndex = -1;
 
             SetContext("root", _data);
+
+            _notifyCollectionChangedReorder = new NotifyCollectionChangedReorder(Data, (sender, args) =>
+            {
+                if (!(_dataStack.Peek().Value is List<object> list)) return;
+                object o = list[args.OldIndex];
+                list.RemoveAt(args.OldIndex);
+                list.Insert(args.NewIndex, o);
+            });
         }
 
         #region Command implementations
@@ -340,15 +365,16 @@ Well, {{TaxedValue}} {{Currency}}, after taxes.
         {
             if (context is Dictionary<string, object> dictionary)
             {
+                CanReorderItems = false;
                 Data.Clear();
                 foreach (ContextEntry keyValue in DataToList(dictionary))
                 {
                     Data.Add(keyValue);
                 }
             }
-
-            if (context is List<object> list)
+            else if (context is List<object> list)
             {
+                CanReorderItems = true;
                 List<ContextEntry> keyValues = list.Select((item, index) => new ContextEntry(index.ToString(), item, this)).ToList();
                 Data.Clear();
                 foreach (ContextEntry keyValue in keyValues)

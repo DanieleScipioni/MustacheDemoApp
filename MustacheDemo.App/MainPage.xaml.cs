@@ -111,5 +111,15 @@ namespace MustacheDemo.App
         }
 
         #endregion
+
+        private void ListViewBase_OnDragItemsStarting(object sender, DragItemsStartingEventArgs e)
+        {
+            _viewModel.Reordering = true;
+        }
+
+        private void ListViewBase_OnDragItemsCompleted(ListViewBase listView, DragItemsCompletedEventArgs args)
+        {
+            _viewModel.Reordering = false;
+        }
     }
 }

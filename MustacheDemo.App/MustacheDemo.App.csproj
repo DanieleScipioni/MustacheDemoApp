@@ -96,6 +96,7 @@
     <Compile Include="App.xaml.cs">
       <DependentUpon>App.xaml</DependentUpon>
     </Compile>
+    <Compile Include="Bridges\NotifyCollectionChangedReorder.cs" />
     <Compile Include="Converters\StringTypeToTextConverter.cs" />
     <Compile Include="Converters\StringTypeToSymbolConverter.cs" />
     <Compile Include="Converters\TypeToSymbolConverter.cs" />
@@ -156,6 +157,14 @@
       <Project>{09517cc9-e27e-4b70-854b-454e263ffb63}</Project>
       <Name>MustacheDemo.Core</Name>
     </ProjectReference>
+  </ItemGroup>
+  <ItemGroup>
+    <PackageReference Include="Microsoft.NETCore.UniversalWindowsPlatform">
+      <Version>5.3.3</Version>
+    </PackageReference>
+    <PackageReference Include="Mustache.PCL">
+      <Version>1.0.0</Version>
+    </PackageReference>
   </ItemGroup>
   <PropertyGroup Condition=" '$(VisualStudioVersion)' == '' or '$(VisualStudioVersion)' &lt; '14.0' ">
     <VisualStudioVersion>14.0</VisualStudioVersion>
