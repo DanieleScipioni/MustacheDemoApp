@@ -152,8 +152,9 @@
                     <ListView Grid.Row="2"
                               ItemsSource="{x:Bind _viewModel.Data}" ItemTemplateSelector="{StaticResource DataDataTemplateSelector}"
                               SelectedIndex="{x:Bind _viewModel.SelectedIndex, Mode=TwoWay}" DoubleTapped="DataEntry_OnDoubleTapped"
+                              CanDragItems="{x:Bind _viewModel.CanReorderItems, Mode=OneWay}"
                               CanReorderItems="{x:Bind _viewModel.CanReorderItems, Mode=OneWay}" AllowDrop="True"
-                              CanDragItems="True" DragItemsStarting="ListViewBase_OnDragItemsStarting" DragItemsCompleted="ListViewBase_OnDragItemsCompleted">
+                              DragItemsStarting="ListViewBase_OnDragItemsStarting" DragItemsCompleted="ListViewBase_OnDragItemsCompleted">
                         <ListView.ItemContainerStyle>
                             <Style TargetType="ListViewItem">
                                 <Setter Property="HorizontalContentAlignment" Value="Stretch"/>
