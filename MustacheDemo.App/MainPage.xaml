@@ -136,23 +136,24 @@
                 <Grid>
                     <Grid.RowDefinitions>
                         <RowDefinition Height="Auto"/>
+                        <RowDefinition Height="Auto"/>
                         <RowDefinition Height="*"/>
                     </Grid.RowDefinitions>
-                    <Grid Margin="12,0" Padding="0,12"
-                                BorderBrush="{ThemeResource SystemControlForegroundAccentBrush}" BorderThickness="0,0,0,1">
-                        <Grid.ColumnDefinitions>
+                    <StackPanel Orientation="Horizontal"
+                                Margin="12,0" Padding="0,12" HorizontalAlignment="Center">
+                        <!--<Grid.ColumnDefinitions>
                             <ColumnDefinition Width="{StaticResource GridLength}"/>
                             <ColumnDefinition Width="*"/>
-                        </Grid.ColumnDefinitions>
-                        <TextBlock Grid.Column="0"
-                                   VerticalAlignment="Center" HorizontalAlignment="Center" Margin="0,0,12,0"
+                        </Grid.ColumnDefinitions>-->
+                        <TextBlock Text="Context: "/>
+                        <TextBlock VerticalAlignment="Center" HorizontalAlignment="Center" Margin="12,0"
                                    Text="{x:Bind _viewModel.Context, Mode=OneWay, Converter={StaticResource TypeToSymbolConverter}}"
                                    FontFamily="{x:Bind _viewModel.Context, Mode=OneWay, Converter={StaticResource TypeToSymbolConverter}}"/>
-                        <TextBlock Grid.Column="1"
-                                   Margin="12,0,0,0"
-                                   VerticalAlignment="Center" Text="{x:Bind _viewModel.ContextKey, Mode=OneWay}"/>
-                    </Grid>
-                    <ListView Grid.Row="1"
+                        <TextBlock VerticalAlignment="Center" Text="{x:Bind _viewModel.ContextKey, Mode=OneWay}"/>
+                    </StackPanel>
+                    <Line Grid.Row="1" Stretch="Fill" Stroke="{ThemeResource SystemControlForegroundAccentBrush}" 
+                          X1="0" Y1="0" X2="1" Y2="0"/>
+                    <ListView Grid.Row="2"
                           ItemsSource="{x:Bind _viewModel.Data}" ItemTemplateSelector="{StaticResource DataDataTemplateSelector}"
                           SelectedIndex="{x:Bind _viewModel.SelectedIndex, Mode=TwoWay}" DoubleTapped="DataEntry_OnDoubleTapped">
                         <ListView.ItemContainerStyle>
