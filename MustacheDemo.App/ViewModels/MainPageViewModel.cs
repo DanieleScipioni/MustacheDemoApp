@@ -69,7 +69,7 @@ namespace MustacheDemo.App.ViewModels
             private set => SetProperty(ref _renderCompleted, value);
         }
 
-        public ObservableCollection<object> Data { get; } = new ObservableCollection<object>();
+        public ObservableCollection<ContextEntry> Data { get; } = new ObservableCollection<ContextEntry>();
 
         public int SelectedIndex { get; set; }
 
@@ -175,6 +175,13 @@ Well, {{TaxedValue}} {{Currency}}, after taxes.
                 object o = list[args.OldIndex];
                 list.RemoveAt(args.OldIndex);
                 list.Insert(args.NewIndex, o);
+
+                int minIndexToRecalculate = Math.Min(args.OldIndex, args.NewIndex);
+                int maxIndexToRecalculate = Math.Max(args.OldIndex, args.NewIndex);
+                for (int index = minIndexToRecalculate; index <= maxIndexToRecalculate; index++)
+                {
+                    Data[index].Key = index.ToString();
+                }
             });
         }
 
