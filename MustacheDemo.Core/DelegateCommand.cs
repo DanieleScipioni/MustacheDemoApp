@@ -28,10 +28,10 @@ namespace MustacheDemo.Core
 {
     public class DelegateCommand : ICommand
     {
-        readonly Action<object> _execute;
-        readonly Func<object, bool> _canExecute;
+        private readonly Action<object> _execute;
+        private readonly Predicate<object> _canExecute;
 
-        public DelegateCommand(Action<object> execute, Func<object, bool> canExecute = null)
+        public DelegateCommand(Action<object> execute, Predicate<object> canExecute = null)
         {
             _execute = execute;
             _canExecute = canExecute;
@@ -41,8 +41,6 @@ namespace MustacheDemo.Core
         {
             CanExecuteChanged?.Invoke(this, EventArgs.Empty);
         }
-
-        #region ICommand
 
         public bool CanExecute(object parameter)
         {
@@ -55,7 +53,5 @@ namespace MustacheDemo.Core
         {
             _execute(parameter);
         }
-
-        #endregion
     }
 }
