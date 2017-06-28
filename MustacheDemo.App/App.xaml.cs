@@ -24,7 +24,6 @@
 
 using Windows.ApplicationModel;
 using Windows.ApplicationModel.Activation;
-using Windows.UI.Xaml;
 
 namespace MustacheDemo.App
 {
@@ -57,28 +56,8 @@ namespace MustacheDemo.App
             }
 #endif
 
-            UIElement rootContent = Window.Current.Content;
-
-            // Do not repeat app initialization when the Window already has content,
-            // just ensure that the window is active
-            if (rootContent == null)
-            {
-                // Create a Frame to act as the navigation context and navigate to the first page
-                rootContent = new MainPage();
-
-                if (e.PreviousExecutionState == ApplicationExecutionState.Terminated)
-                {
-                    //TODO: Load state from previously suspended application
-                }
-
-                // Place the frame in the current Window
-                Window.Current.Content = rootContent;
-            }
-
-            if (e.PrelaunchActivated == false)
-            {
-                Window.Current.Activate();
-            }
+            var viewModelLocator = Resources["ViewModelLocator"] as ViewModelLocator;
+            viewModelLocator?.AppOnLauched(e);
         }
 
         /// <summary>
@@ -88,10 +67,11 @@ namespace MustacheDemo.App
         /// </summary>
         /// <param name="sender">The source of the suspend request.</param>
         /// <param name="e">Details about the suspend request.</param>
-        private static void OnSuspending(object sender, SuspendingEventArgs e)
+        private void OnSuspending(object sender, SuspendingEventArgs e)
         {
             SuspendingDeferral deferral = e.SuspendingOperation.GetDeferral();
-            //TODO: Save application state and stop any background activity
+            var viewModelLocator = Resources["ViewModelLocator"] as ViewModelLocator;
+            viewModelLocator?.AppOnSuspending(e);
             deferral.Complete();
         }
     }

@@ -32,12 +32,11 @@
     xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
     mc:Ignorable="d"
     d:DesignHeight="300"
-    d:DesignWidth="400"
-    DataContext="{Binding Converter={StaticResource ViewModelLocator}, RelativeSource={RelativeSource Self}}">
+    d:DesignWidth="400">
     <StackPanel VerticalAlignment="Center" Margin="48,0">
-        <TextBlock Text="{x:Bind _splashControlViewModel.Text, Mode=OneWay}" Margin="0,8"/>
-        <ProgressBar Maximum="{x:Bind _splashControlViewModel.Total, Mode=OneWay}"
-                     Value="{x:Bind _splashControlViewModel.Partial, Mode=OneWay}"
-                     IsIndeterminate="{x:Bind _splashControlViewModel.Indeterminate, Mode=OneWay}"/>
+        <TextBlock Text="{x:Bind _viewModel.Text, Mode=OneWay}" Margin="0,8"/>
+        <ProgressBar Maximum="{x:Bind _viewModel.Total, Mode=OneWay}"
+                     Value="{x:Bind _viewModel.Partial, Mode=OneWay}"
+                     IsIndeterminate="{x:Bind _viewModel.Indeterminate, Mode=OneWay}"/>
     </StackPanel>
 </UserControl>

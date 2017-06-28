@@ -28,12 +28,16 @@ namespace MustacheDemo.App.UserControls.Splash
 {
     public sealed partial class SplashControl
     {
-        private readonly ISplashControlViewModel _splashControlViewModel;
+        private ISplashControlViewModel _viewModel;
 
         public SplashControl()
         {
             InitializeComponent();
-            _splashControlViewModel = DataContext as ISplashControlViewModel;
+            DataContextChanged += (sender, args) =>
+            {
+                if (_viewModel != args.NewValue) _viewModel = args.NewValue as ISplashControlViewModel;
+                Bindings.Update();
+            };
         }
     }
 
