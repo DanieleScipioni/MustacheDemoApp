@@ -40,12 +40,12 @@ namespace MustacheDemo.Data
 
         private static void AddUpgradeSteps(DatabaseSchemaManager schemaManager)
         {
-            schemaManager.Add(new DelayUpgradeStep(0, 1, 2000));
-            schemaManager.Add(new DelayUpgradeStep(1, 2, 2000));
-            schemaManager.Add(new DelayUpgradeStep(2, 3, 4000));
-            schemaManager.Add(new DelayUpgradeStep(3, 4, 2000));
-            schemaManager.Add(new DelayUpgradeStep(4, 5, 4000));
-            schemaManager.Add(new DelayUpgradeStep(5, 6, 4000));
+            schemaManager.Add(new DelayUpgradeStep(0, 1, 0));
+            schemaManager.Add(new DelayUpgradeStep(1, 2, 0));
+            schemaManager.Add(new DelayUpgradeStep(2, 3, 0));
+            schemaManager.Add(new DelayUpgradeStep(3, 4, 0));
+            schemaManager.Add(new DelayUpgradeStep(4, 5, 0));
+            schemaManager.Add(new DelayUpgradeStep(5, 6, 0));
         }
     }
 }
