@@ -22,8 +22,10 @@
 // SOFTWARE.
 // ******************************************************************************
 
-using Microsoft.Data.Sqlite;
+using System;
 using System.Threading.Tasks;
+using Windows.ApplicationModel;
+using Windows.Storage;
 
 namespace MustacheDemo.Core.Database.Schema
 {
@@ -37,8 +39,6 @@ namespace MustacheDemo.Core.Database.Schema
             StartVersion = startVersion;
             TargetVersion = targetVersion;
         }
-
-        public abstract void ExecuteUpgrade(SqliteConnection connection);
     }
 
     public class SqlStmtStringUpgradeStep : UpgradeStep
@@ -50,10 +50,27 @@ namespace MustacheDemo.Core.Database.Schema
             _stmt = stmt;
         }
 
-        public override void ExecuteUpgrade(SqliteConnection connection)
+        public string GetSqlStmt()
         {
-            connection.ExecuteNonQuery(_stmt);
+            return _stmt;
         }
+    }
+
+    public class ResourceSqlFileUpgradeStep : UpgradeStep
+    {
+        private readonly string _filePath;
+
+        public ResourceSqlFileUpgradeStep(long startVersion, long targetVersion, string filePath) : base(startVersion, targetVersion)
+        {
+            _filePath = filePath;
+        }
+
+        public async Task<string> GetSqlStmt()
+        {
+            StorageFile file = await Package.Current.InstalledLocation.GetFileAsync(_filePath);
+            return await FileIO.ReadTextAsync(file);
+        }
+
     }
 
     public class DelayUpgradeStep : UpgradeStep
@@ -64,7 +81,7 @@ namespace MustacheDemo.Core.Database.Schema
             _delay = delay;
         }
 
-        public override void ExecuteUpgrade(SqliteConnection connection)
+        public void ExecuteDelay()
         {
             Task.Delay(_delay).GetAwaiter().GetResult();
         }

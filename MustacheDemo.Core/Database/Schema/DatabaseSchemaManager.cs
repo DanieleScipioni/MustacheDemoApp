@@ -25,6 +25,7 @@
 using System;
 using System.Collections.Generic;
 using System.Linq;
+using System.Threading.Tasks;
 using Microsoft.Data.Sqlite;
 
 namespace MustacheDemo.Core.Database.Schema
@@ -53,7 +54,7 @@ namespace MustacheDemo.Core.Database.Schema
                 using (SqliteConnection connection = DatabaseConnectionManager.GetMustacheDemoConnection())
                 {
                     connection.Open();
-                    return _currentSchemaVersion = (long) connection.ExecuteScalar("PRAGMA user_version;");
+                    return _currentSchemaVersion = (long)connection.ExecuteScalar("PRAGMA user_version;");
                 }
             }
         }
@@ -65,7 +66,7 @@ namespace MustacheDemo.Core.Database.Schema
             _stepsByStartVersion[upgradeStep.StartVersion] = upgradeStep;
         }
 
-        public void Upgrade(IProgress<Tuple<long, long>> progress = null)
+        public async Task Upgrade(IProgress<Tuple<long, long>> progress = null)
         {
             long currentVersion = SchemaVersion;
 
@@ -81,21 +82,35 @@ namespace MustacheDemo.Core.Database.Schema
                     if (!_stepsByStartVersion.ContainsKey(currentVersion)) break;
 
                     UpgradeStep upgradeStep = _stepsByStartVersion[currentVersion];
-                    PerformUpgrade(connection, upgradeStep);
+                    await PerformUpgrade(connection, upgradeStep);
                     currentVersion = upgradeStep.TargetVersion;
                     progress?.Report(new Tuple<long, long>(count, partial++));
                 } while (currentVersion < _expectedSchemaVersion);
             }
         }
 
-        private static void PerformUpgrade(SqliteConnection connection, UpgradeStep upgradeStep)
+        private static async Task PerformUpgrade(SqliteConnection connection, UpgradeStep upgradeStep)
         {
-            using (SqliteTransaction transaction = connection.BeginTransaction())
+            string sqlStmt = null;
+            if (upgradeStep is SqlStmtStringUpgradeStep sqlStmtStringUpgradeStep)
             {
+                sqlStmt = sqlStmtStringUpgradeStep.GetSqlStmt();
+            }
+            else if (upgradeStep is ResourceSqlFileUpgradeStep resourceSqlFileUpgradeStep)
+            {
+                sqlStmt = await resourceSqlFileUpgradeStep.GetSqlStmt();
+            }
+
+            string userVersionStmt = $"PRAGMA user_version = {upgradeStep.TargetVersion};";
+
+            if (sqlStmt != null)
+            {
+                SqliteTransaction transaction = connection.BeginTransaction();
                 try
                 {
-                    upgradeStep.ExecuteUpgrade(connection);
-                    connection.ExecuteNonQuery($"PRAGMA user_version = {upgradeStep.TargetVersion};", transaction);
+                    transaction.ExecuteNonQuery(sqlStmt);
+                    int pragmaResult = transaction.ExecuteNonQuery(userVersionStmt);
+                    if (pragmaResult == -1) throw new Exception($"Failed to execute {userVersionStmt}");
                     transaction.Commit();
                 }
                 catch (Exception)
@@ -104,6 +119,17 @@ namespace MustacheDemo.Core.Database.Schema
                     throw;
                 }
             }
+            else if (upgradeStep is DelayUpgradeStep delayUpgradeStep)
+            {
+                ExecuteDelayUpgradeStep(delayUpgradeStep);
+                int pragmaResult = connection.ExecuteNonQuery(userVersionStmt);
+                if (pragmaResult == -1) throw new Exception($"Failed to execute {userVersionStmt}");
+            }
+        }
+
+        private static void ExecuteDelayUpgradeStep(DelayUpgradeStep delayUpgradeStep)
+        {
+            delayUpgradeStep.ExecuteDelay();
         }
     }
 }

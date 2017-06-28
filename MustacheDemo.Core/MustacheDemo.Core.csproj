@@ -115,6 +115,7 @@
     <Compile Include="Database\DatabaseConnectionManager.cs" />
     <Compile Include="Database\Schema\DatabaseSchemaManager.cs" />
     <Compile Include="Database\Schema\UpgradeStep.cs" />
+    <Compile Include="Database\SqliteTransactionExtension.cs" />
     <Compile Include="DelegateCommand.cs" />
   </ItemGroup>
   <ItemGroup>

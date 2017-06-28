@@ -32,9 +32,9 @@ namespace MustacheDemo.Core.Database
         }
 
         public static int ExecuteNonQuery(this SqliteConnection connection, string stmt,
-            SqliteTransaction transaction = null, params SqliteParameter[] parameters)
+            params SqliteParameter[] parameters)
         {
-            using (var command = new SqliteCommand(stmt, connection, transaction))
+            using (var command = new SqliteCommand(stmt, connection))
             {
                 command.Parameters.AddRange(parameters);
                 return command.ExecuteNonQuery();
