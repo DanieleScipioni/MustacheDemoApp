@@ -120,7 +120,6 @@
     <Compile Include="..\MustacheDemo.App\Properties\AssemblyInfo.cs">
       <Link>Properties\AssemblyInfo.cs</Link>
     </Compile>
-    <Compile Include="Database.cs" />
     <Compile Include="DataTypes.cs" />
     <Compile Include="Schema.cs" />
   </ItemGroup>
