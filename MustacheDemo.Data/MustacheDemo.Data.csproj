@@ -109,15 +109,26 @@
     <EmbeddedResource Include="Properties\Mustache.Demo.Data.rd.xml" />
   </ItemGroup>
   <ItemGroup>
+    <PackageReference Include="Microsoft.Data.SQLite">
+      <Version>2.0.0-preview1-final</Version>
+    </PackageReference>
     <PackageReference Include="Microsoft.NETCore.UniversalWindowsPlatform">
-      <Version>5.2.3</Version>
+      <Version>5.3.3</Version>
     </PackageReference>
   </ItemGroup>
   <ItemGroup>
     <Compile Include="..\MustacheDemo.App\Properties\AssemblyInfo.cs">
       <Link>Properties\AssemblyInfo.cs</Link>
     </Compile>
+    <Compile Include="Database.cs" />
     <Compile Include="DataTypes.cs" />
+    <Compile Include="Schema.cs" />
+  </ItemGroup>
+  <ItemGroup>
+    <ProjectReference Include="..\MustacheDemo.Core\MustacheDemo.Core.csproj">
+      <Project>{09517CC9-E27E-4B70-854B-454E263FFB63}</Project>
+      <Name>MustacheDemo.Core</Name>
+    </ProjectReference>
   </ItemGroup>
   <PropertyGroup Condition=" '$(VisualStudioVersion)' == '' or '$(VisualStudioVersion)' &lt; '14.0' ">
     <VisualStudioVersion>14.0</VisualStudioVersion>
