@@ -52,6 +52,7 @@ namespace MustacheDemo.Core.Database.Schema
 
                 using (SqliteConnection connection = DatabaseConnectionManager.GetMustacheDemoConnection())
                 {
+                    connection.Open();
                     return _currentSchemaVersion = (long) connection.ExecuteScalar("PRAGMA user_version;");
                 }
             }
@@ -73,15 +74,18 @@ namespace MustacheDemo.Core.Database.Schema
             progress?.Report(new Tuple<long, long>(count, partial));
 
             using (SqliteConnection connection = DatabaseConnectionManager.GetConnection(_connectionString))
-            do
             {
-                if (!_stepsByStartVersion.ContainsKey(currentVersion)) break;
+                connection.Open();
+                do
+                {
+                    if (!_stepsByStartVersion.ContainsKey(currentVersion)) break;
 
-                UpgradeStep upgradeStep = _stepsByStartVersion[currentVersion];
-                PerformUpgrade(connection, upgradeStep);
-                currentVersion = upgradeStep.TargetVersion;
-                progress?.Report(new Tuple<long, long>(count, partial++));
-            } while (currentVersion < _expectedSchemaVersion);
+                    UpgradeStep upgradeStep = _stepsByStartVersion[currentVersion];
+                    PerformUpgrade(connection, upgradeStep);
+                    currentVersion = upgradeStep.TargetVersion;
+                    progress?.Report(new Tuple<long, long>(count, partial++));
+                } while (currentVersion < _expectedSchemaVersion);
+            }
         }
 
         private static void PerformUpgrade(SqliteConnection connection, UpgradeStep upgradeStep)
