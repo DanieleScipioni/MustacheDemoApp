@@ -22,8 +22,8 @@
 // SOFTWARE.
 // ******************************************************************************
 
-using System.Threading.Tasks;
 using Microsoft.Data.Sqlite;
+using System.Threading.Tasks;
 
 namespace MustacheDemo.Core.Database.Schema
 {

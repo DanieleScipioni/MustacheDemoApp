@@ -29,28 +29,35 @@ using Microsoft.Data.Sqlite;
 
 namespace MustacheDemo.Core.Database.Schema
 {
-    public class DatabaseSchemaManager : IDisposable
+    public class DatabaseSchemaManager
     {
-        private readonly SqliteConnection _connection;
+        private readonly string _connectionString;
         private readonly long _expectedSchemaVersion;
         private long _currentSchemaVersion;
         private readonly Dictionary<long, UpgradeStep> _stepsByStartVersion;
 
-        public DatabaseSchemaManager(SqliteConnection connection, long expectedSchemaVersion)
+        public DatabaseSchemaManager(string connectionStringString, long expectedSchemaVersion)
         {
-            _connection = connection;
-            _connection.Open();
+            _connectionString = connectionStringString;
             _expectedSchemaVersion = expectedSchemaVersion;
             _currentSchemaVersion = -1;
             _stepsByStartVersion = new Dictionary<long, UpgradeStep>();
         }
 
-        public long SchemaVersion => _currentSchemaVersion == -1
-            ? _currentSchemaVersion = (long) _connection.ExecuteScalar("PRAGMA user_version;")
-            : _currentSchemaVersion;
+        public long SchemaVersion
+        {
+            get
+            {
+                if (_currentSchemaVersion != -1) return _currentSchemaVersion;
+
+                using (SqliteConnection connection = DatabaseConnectionManager.GetMustacheDemoConnection())
+                {
+                    return _currentSchemaVersion = (long) connection.ExecuteScalar("PRAGMA user_version;");
+                }
+            }
+        }
 
         public bool NeedsUpgrade => SchemaVersion < _expectedSchemaVersion;
-
 
         public void Add(UpgradeStep upgradeStep)
         {
@@ -65,12 +72,13 @@ namespace MustacheDemo.Core.Database.Schema
             long partial = 0;
             progress?.Report(new Tuple<long, long>(count, partial));
 
+            using (SqliteConnection connection = DatabaseConnectionManager.GetConnection(_connectionString))
             do
             {
                 if (!_stepsByStartVersion.ContainsKey(currentVersion)) break;
 
                 UpgradeStep upgradeStep = _stepsByStartVersion[currentVersion];
-                PerformUpgrade(_connection, upgradeStep);
+                PerformUpgrade(connection, upgradeStep);
                 currentVersion = upgradeStep.TargetVersion;
                 progress?.Report(new Tuple<long, long>(count, partial++));
             } while (currentVersion < _expectedSchemaVersion);
@@ -92,11 +100,6 @@ namespace MustacheDemo.Core.Database.Schema
                     throw;
                 }
             }
-        }
-
-        public void Dispose()
-        {
-            _connection?.Dispose();
         }
     }
 }

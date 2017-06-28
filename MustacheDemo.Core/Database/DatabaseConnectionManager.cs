@@ -28,8 +28,8 @@ namespace MustacheDemo.Core.Database
 {
     public static class DatabaseConnectionManager
     {
-        private const string Db = "db.sqlite";
-        private static readonly string ConnectionString = new SqliteConnectionStringBuilder {DataSource = Db}.ToString();
+        public const string MustacheDemo = "mustachedemo.sqlite";
+        public static readonly string MustacheDemoConnectionString = new SqliteConnectionStringBuilder {DataSource = MustacheDemo}.ToString();
 
         //private static readonly DbContextOptions<EfContext> OptionsBuilderOptions;
 
@@ -40,9 +40,14 @@ namespace MustacheDemo.Core.Database
             //OptionsBuilderOptions = optionsBuilder.Options;
         }
 
-        public static SqliteConnection GetConnection()
+        public static SqliteConnection GetMustacheDemoConnection()
         {
-            return new SqliteConnection(ConnectionString);
+            return new SqliteConnection(MustacheDemoConnectionString);
+        }
+
+        public static SqliteConnection GetConnection(string connectionString)
+        {
+            return new SqliteConnection(connectionString);
         }
 
         //public static EfContext GetEfContext()
