@@ -248,7 +248,9 @@ Well, {{TaxedValue}} {{Currency}}, after taxes.
 
         private void EditSelectedData(object parameter)
         {
-            var keyValue = Data[SelectedIndex];
+            if (SelectedIndex == -1) return;
+
+            ContextEntry keyValue = Data[SelectedIndex];
             if (keyValue == null) return;
 
             EditContextEntry(keyValue);
