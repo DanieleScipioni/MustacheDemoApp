@@ -22,8 +22,19 @@
 // SOFTWARE.
 // ******************************************************************************
 
+using System;
+using System.Runtime.InteropServices.WindowsRuntime;
+using System.Threading;
+using System.Threading.Tasks;
 using Windows.ApplicationModel;
 using Windows.ApplicationModel.Activation;
+using Windows.Foundation;
+using Windows.UI.Core;
+using Windows.UI.Xaml;
+using MustacheDemo.App.UserControls.Splash;
+using MustacheDemo.App.ViewModels;
+using MustacheDemo.Core.Database.Schema;
+using MustacheDemo.Data;
 
 namespace MustacheDemo.App
 {
@@ -56,8 +67,39 @@ namespace MustacheDemo.App
             }
 #endif
 
-            var viewModelLocator = Resources["ViewModelLocator"] as ViewModelLocator;
-            viewModelLocator?.AppOnLauched(e);
+            //// Do not repeat app initialization when the Window already has content,
+            //// just ensure that the window is active
+            Window window = Window.Current;
+            if (window.Content != null) return;
+
+            DatabaseSchemaManager schemaManager = Schema.GetMustacheDemoDatabaseSchemaManager();
+            if (schemaManager.NeedsUpgrade)
+            {
+                var splashControlViewModel = new SplashControlViewModel();
+                window.Content = new SplashControl
+                {
+                    DataContext = splashControlViewModel
+                };
+
+#pragma warning disable CS4014
+                Window.Current.CoreWindow.Dispatcher.RunAsync(CoreDispatcherPriority.Normal, () =>
+                    {
+                        StartSchemaUpgrade(schemaManager, splashControlViewModel);
+                    }
+                );
+#pragma warning restore CS4014
+            }
+            else
+            {
+                window.Content = new MainPage();
+            }
+
+            if (e.PrelaunchActivated == false) window.Activate();
+
+            if (e.PreviousExecutionState == ApplicationExecutionState.Terminated)
+            {
+                //TODO: Load state from previously suspended application
+            }
         }
 
         /// <summary>
@@ -67,12 +109,32 @@ namespace MustacheDemo.App
         /// </summary>
         /// <param name="sender">The source of the suspend request.</param>
         /// <param name="e">Details about the suspend request.</param>
-        private void OnSuspending(object sender, SuspendingEventArgs e)
+        private static void OnSuspending(object sender, SuspendingEventArgs e)
         {
             SuspendingDeferral deferral = e.SuspendingOperation.GetDeferral();
-            var viewModelLocator = Resources["ViewModelLocator"] as ViewModelLocator;
-            viewModelLocator?.AppOnSuspending(e);
             deferral.Complete();
         }
+
+        private static async void StartSchemaUpgrade(DatabaseSchemaManager schemaManager, SplashControlViewModel splashControlViewModel)
+        {
+            Task Provider(CancellationToken s, IProgress<Tuple<long, long>> progress)
+            {
+                return Task.Run(() => schemaManager.Upgrade(progress));
+            }
+
+            IAsyncActionWithProgress<Tuple<long, long>> asyncActionWithProgress =
+                AsyncInfo.Run((Func<CancellationToken, IProgress<Tuple<long, long>>, Task>)Provider);
+
+            splashControlViewModel.Text = "Database upgrade";
+            asyncActionWithProgress.Progress += (info, progressInfo) =>
+            {
+                splashControlViewModel.Indeterminate = false;
+                splashControlViewModel.Total = progressInfo.Item1;
+                splashControlViewModel.Partial = progressInfo.Item2;
+            };
+            await asyncActionWithProgress;
+            Window.Current.Content = new MainPage();
+        }
+
     }
 }
