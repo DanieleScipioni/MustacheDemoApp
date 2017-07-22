@@ -82,14 +82,14 @@ namespace MustacheDemo.Core.Database.Schema
                     if (!_stepsByStartVersion.ContainsKey(currentVersion)) break;
 
                     UpgradeStep upgradeStep = _stepsByStartVersion[currentVersion];
-                    await PerformUpgrade(connection, upgradeStep);
+                    await Upgrade(connection, upgradeStep);
                     currentVersion = upgradeStep.TargetVersion;
                     progress?.Report(new Tuple<long, long>(count, partial++));
                 } while (currentVersion < _expectedSchemaVersion);
             }
         }
 
-        private static async Task PerformUpgrade(SqliteConnection connection, UpgradeStep upgradeStep)
+        private static async Task Upgrade(SqliteConnection connection, UpgradeStep upgradeStep)
         {
             string sqlStmt = null;
             if (upgradeStep is SqlStmtStringUpgradeStep sqlStmtStringUpgradeStep)
