@@ -37,9 +37,9 @@ namespace MustacheDemo.Core.Database.Schema
         private long _currentSchemaVersion;
         private readonly Dictionary<long, UpgradeStep> _stepsByStartVersion;
 
-        public DatabaseSchemaManager(string connectionStringString, long expectedSchemaVersion)
+        public DatabaseSchemaManager(string connectionString, long expectedSchemaVersion)
         {
-            _connectionString = connectionStringString;
+            _connectionString = connectionString;
             _expectedSchemaVersion = expectedSchemaVersion;
             _currentSchemaVersion = -1;
             _stepsByStartVersion = new Dictionary<long, UpgradeStep>();
@@ -51,7 +51,7 @@ namespace MustacheDemo.Core.Database.Schema
             {
                 if (_currentSchemaVersion != -1) return _currentSchemaVersion;
 
-                using (SqliteConnection connection = DatabaseConnectionManager.GetMustacheDemoConnection())
+                using (SqliteConnection connection = DatabaseConnectionManager.GetConnection(_connectionString))
                 {
                     connection.Open();
                     return _currentSchemaVersion = (long)connection.ExecuteScalar("PRAGMA user_version;");
@@ -70,7 +70,7 @@ namespace MustacheDemo.Core.Database.Schema
         {
             long currentVersion = SchemaVersion;
 
-            long count = _stepsByStartVersion.Count(kv => kv.Key >= currentVersion);
+            long count = _stepsByStartVersion.Count(kv => kv.Key >= currentVersion && kv.Key < _expectedSchemaVersion);
             long partial = 0;
             progress?.Report(new Tuple<long, long>(count, partial));
 
