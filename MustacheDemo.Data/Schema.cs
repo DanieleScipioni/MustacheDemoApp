@@ -29,7 +29,7 @@ namespace MustacheDemo.Data
 {
     public static class Schema
     {
-        public const long SchemaVersion = 6;
+        public const long SchemaVersion = 1;
 
         public static DatabaseSchemaManager GetMustacheDemoDatabaseSchemaManager()
         {
