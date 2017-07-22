@@ -84,7 +84,7 @@ namespace MustacheDemo.Core.Database.Schema
                     UpgradeStep upgradeStep = _stepsByStartVersion[currentVersion];
                     await Upgrade(connection, upgradeStep);
                     currentVersion = upgradeStep.TargetVersion;
-                    progress?.Report(new Tuple<long, long>(count, partial++));
+                    progress?.Report(new Tuple<long, long>(count, ++partial));
                 } while (currentVersion < _expectedSchemaVersion);
             }
         }
