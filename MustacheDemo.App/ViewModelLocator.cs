@@ -26,7 +26,6 @@ using MustacheDemo.App.Bridges;
 using MustacheDemo.App.ViewModels;
 using System;
 using Windows.UI.Xaml;
-using Windows.UI.Xaml.Controls;
 using Windows.UI.Xaml.Data;
 
 namespace MustacheDemo.App
@@ -39,27 +38,29 @@ namespace MustacheDemo.App
 
             if (value is MainPage) viewModel = new MainPageViewModel(new DataService());
 
-            if (value is Control control)
-            if (viewModel is IDisposable disposable)
-            {
-                SetupViewModelDispose(control, disposable);
-            }
+            CheckViewModelForDispose(viewModel, value);
 
             return viewModel;
         }
 
-        private static void SetupViewModelDispose(Control control, IDisposable disposable)
+        private static void CheckViewModelForDispose(object viewModel, object value)
         {
-            void UnloadedHandler (object sender, RoutedEventArgs args)
+            if (!(value is FrameworkElement control)) return;
+            if (viewModel is IDisposable disposable)
             {
-                var senderControl = (Control) sender;
-                senderControl.Unloaded -= UnloadedHandler;
-                disposable.Dispose();
+                SetupViewModelDispose(control, disposable);
             }
-
-            control.Unloaded += UnloadedHandler;
         }
 
+        private static void SetupViewModelDispose(FrameworkElement frameworkElement, IDisposable disposable)
+        {
+            void UnloadedHandler(object sender, RoutedEventArgs args)
+            {
+                ((FrameworkElement)sender).Unloaded -= UnloadedHandler;
+                disposable.Dispose();
+            }
+            frameworkElement.Unloaded += UnloadedHandler;
+        }
 
         public object ConvertBack(object value, Type targetType, object parameter, string language)
         {
