@@ -9,4 +9,14 @@ CREATE TABLE [templates](
 INSERT INTO [templates]
 ([name],[template])
 VALUES
-('First template' ,'Hello {{Name}}\nYou have just won {{Value}} {{Currency}}!\n{{#InCa}}\nWell, {{TaxedValue}} {{Currency}}, after taxes.\n{{/InCa}}\n{{#List}}\n{{.}}\n{{/List}}\n{{#d}}\n{{e}}: {{tt}}\n{{/d}});');
+('First template' ,'Hello {{Name}}
+You have just won {{Value}} {{Currency}}!
+{{#InCa}}
+Well, {{TaxedValue}} {{Currency}}, after taxes.
+{{/InCa}}
+{{#List}}
+{{.}}
+{{/List}}
+{{#d}}
+{{e}}: {{tt}}
+{{/d}}');
