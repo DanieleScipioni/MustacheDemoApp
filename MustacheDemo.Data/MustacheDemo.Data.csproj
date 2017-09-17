@@ -103,6 +103,7 @@
     </Compile>
     <Compile Include="DataTypes.cs" />
     <Compile Include="Schema.cs" />
+    <Compile Include="Template.cs" />
   </ItemGroup>
   <ItemGroup>
     <ProjectReference Include="..\MustacheDemo.Core\MustacheDemo.Core.csproj">
