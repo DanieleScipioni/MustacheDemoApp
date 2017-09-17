@@ -16,6 +16,7 @@
 // SOFTWARE.
 // ******************************************************************************
 
+using System.Threading.Tasks;
 using Microsoft.Data.Sqlite;
 
 namespace MustacheDemo.Core.Database
@@ -38,6 +39,14 @@ namespace MustacheDemo.Core.Database
             {
                 command.Parameters.AddRange(parameters);
                 return command.ExecuteNonQuery();
+            }
+        }
+
+        public static async Task<SqliteDataReader> ExecuteReaderAsync(this SqliteConnection connection, string commandText)
+        {
+            using (var command = new SqliteCommand(commandText, connection))
+            {
+                return await command.ExecuteReaderAsync();
             }
         }
     }
