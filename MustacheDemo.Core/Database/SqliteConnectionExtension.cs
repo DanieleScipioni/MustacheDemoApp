@@ -42,6 +42,16 @@ namespace MustacheDemo.Core.Database
             }
         }
 
+        public static async Task<int> ExecuteNonQueryAsync(this SqliteConnection connection, string stmt,
+            params SqliteParameter[] parameters)
+        {
+            using (var command = new SqliteCommand(stmt, connection))
+            {
+                command.Parameters.AddRange(parameters);
+                return await command.ExecuteNonQueryAsync();
+            }
+        }
+
         public static async Task<SqliteDataReader> ExecuteReaderAsync(this SqliteConnection connection, string commandText)
         {
             using (var command = new SqliteCommand(commandText, connection))
