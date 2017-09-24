@@ -30,14 +30,15 @@ using System.Collections;
 using System.Collections.Generic;
 using System.Collections.ObjectModel;
 using System.Linq;
+using Template = MustacheDemo.Data.Template;
 
 namespace MustacheDemo.App.ViewModels
 {
     internal class MainPageViewModel : BindableBase, IContextEntryDataService
     {
-        #region Propery backing fields
+        #region Properties backing fields
 
-        private string _template;
+        private string _templateText;
         private bool _renderCompleted;
         private string _contextKey;
         private bool _canReorderItems;
@@ -46,14 +47,16 @@ namespace MustacheDemo.App.ViewModels
 
         #region Binding properties
 
-        public string Template
+        public string TemplateText
         {
-            get => _template;
+            get => _templateText;
             set
             {
-                if (SetProperty(ref _template, value))
+                if (SetProperty(ref _templateText, value))
                 {
-                    bool templateEmpty = string.IsNullOrEmpty(_template);
+                    _canSave = !_renderCompleted;
+                    SaveTemplateCommand.RaiseCanExecuteChanged();
+                    bool templateEmpty = string.IsNullOrEmpty(_templateText);
                     if (_canRender && templateEmpty || !_canRender && !templateEmpty)
                     {
                         _canRender = !templateEmpty;
@@ -106,6 +109,8 @@ namespace MustacheDemo.App.ViewModels
 
         public readonly DelegateCommand EditTemplateCommand;
 
+        public readonly DelegateCommand SaveTemplateCommand;
+
         public readonly DelegateCommand AddDataCommand;
 
         public readonly DelegateCommand EditSelectedDataCommand;
@@ -120,8 +125,9 @@ namespace MustacheDemo.App.ViewModels
 
         private readonly DataService _dataService;
         private readonly Stack<KeyValuePair<string, object>> _dataStack;
-        private string _templateCache;
+        private Template _template;
         private bool _canRender;
+        private bool _canSave;
         private readonly NotifyCollectionChangedReorder _notifyCollectionChangedReorder;
 
         public MainPageViewModel(DataService dataService)
@@ -129,6 +135,7 @@ namespace MustacheDemo.App.ViewModels
             _dataService = dataService;
             RenderCommand = new DelegateCommand(Render, RenderCanExecute);
             EditTemplateCommand = new DelegateCommand(EditTemplate, EditTemplateCanExecute);
+            SaveTemplateCommand = new DelegateCommand(SaveTemplateAction, SaveTemplateCanExecute);
             AddDataCommand = new DelegateCommand(AddData);
             EditSelectedDataCommand = new DelegateCommand(EditSelectedData);
             RemoveDataCommand = new DelegateCommand(RemoveData);
@@ -141,29 +148,26 @@ namespace MustacheDemo.App.ViewModels
                 {"TaxedValue", 6000m},
                 {"Currency", "dollars"},
                 {"InCa", true},
-                {"List", new List<object> {
-                    "a", "b", 1
-                }},
-                {"d", new Dictionary<string, object> {
-                    {"e","funge"},
-                    { "tt", true}
-                }}
+                {
+                    "List", new List<object>
+                    {
+                        "a",
+                        "b",
+                        1
+                    }
+                },
+                {
+                    "d", new Dictionary<string, object>
+                    {
+                        {"e", "funge"},
+                        {"tt", true}
+                    }
+                }
             };
 
             _dataStack = new Stack<KeyValuePair<string, object>>();
 
             _canRender = true;
-            _template = @"Hello {{Name}}
-You have just won {{Value}} {{Currency}}!
-{{#InCa}}
-Well, {{TaxedValue}} {{Currency}}, after taxes.
-{{/InCa}}
-{{#List}}
-{{.}}
-{{/List}}
-{{#d}}
-{{e}}: {{tt}}
-{{/d}}";
 
             SelectedIndex = -1;
 
@@ -183,7 +187,23 @@ Well, {{TaxedValue}} {{Currency}}, after taxes.
                     Data[index].Key = index.ToString();
                 }
             });
+
+            InitFieldsAsync();
         }
+
+        private async void InitFieldsAsync()
+        {
+            List<Template> templates = await _dataService.GetTemplates();
+            if (templates.Count > 0)
+            {
+                _template = templates[0];
+                _templateText = _template.Text;
+                OnPropertyChangedByName(nameof(TemplateText));
+                SaveTemplateCommand.RaiseCanExecuteChanged();
+                RenderCommand.RaiseCanExecuteChanged();
+            }
+        }
+
 
         #region Command implementations
 
@@ -191,16 +211,15 @@ Well, {{TaxedValue}} {{Currency}}, after taxes.
         {
             if (Data == null) return;
             
-            _templateCache = Template;
+            RenderCompleted = true;
             try
             {
-                Template = Mustache.Template.Compile(_templateCache.Replace("\r", Environment.NewLine)).Render(_data);
+                TemplateText = Mustache.Template.Compile(_templateText.Replace('\r', '\n')).Render(_data);
             }
             catch (MustacheException e)
             {
-                Template = e.Message;
+                TemplateText = e.Message;
             }
-            RenderCompleted = true;
             RenderCommand.RaiseCanExecuteChanged();
             EditTemplateCommand.RaiseCanExecuteChanged();
         }
@@ -212,8 +231,7 @@ Well, {{TaxedValue}} {{Currency}}, after taxes.
 
         private void EditTemplate(object parameter)
         {
-            Template = _templateCache;
-            _templateCache = null;
+            TemplateText = _template.Text;
             RenderCompleted = false;
             RenderCommand.RaiseCanExecuteChanged();
             EditTemplateCommand.RaiseCanExecuteChanged();
@@ -222,6 +240,19 @@ Well, {{TaxedValue}} {{Currency}}, after taxes.
         private bool EditTemplateCanExecute(object parameter)
         {
             return RenderCompleted;
+        }
+
+        private async void SaveTemplateAction(object parameter)
+        {
+            _template.Text = _templateText;
+            _canSave = false;
+            SaveTemplateCommand.RaiseCanExecuteChanged();
+            await _dataService.SaveTemplate(_template);
+        }
+
+        private bool SaveTemplateCanExecute(object parameter)
+        {
+            return _canSave;
         }
 
         private async void AddData(object parameter)
@@ -288,9 +319,7 @@ Well, {{TaxedValue}} {{Currency}}, after taxes.
 
         public void UpdateDataValue(string key, object value)
         {
-            var dictionary = _dataStack.Peek().Value as IDictionary;
-            if (dictionary == null) return;
-
+            if (!(_dataStack.Peek().Value is IDictionary dictionary)) return;
             dictionary[key] = value;
         }
 

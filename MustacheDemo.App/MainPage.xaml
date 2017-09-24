@@ -108,6 +108,7 @@
                         </AppBarButton.Icon>
                     </AppBarButton>
                     <AppBarButton Icon="Edit" Label="Edit template" Command="{x:Bind _viewModel.EditTemplateCommand}"/>
+                    <AppBarButton Icon="Save" Label="Edit template" Command="{x:Bind _viewModel.SaveTemplateCommand}"/>
                 </CommandBar.PrimaryCommands>
             </CommandBar>
             <CommandBar x:Name="DataCommandBar">
@@ -126,7 +127,7 @@
                          ScrollViewer.VerticalScrollBarVisibility="Visible"
                          BorderThickness="1"
                          TextChanged="TemplateTextBox_OnTextChanged"
-                         Text="{x:Bind _viewModel.Template, Mode=OneWay}"
+                         Text="{x:Bind _viewModel.TemplateText, Mode=OneWay}"
                          IsReadOnly="{x:Bind _viewModel.RenderCompleted, Mode=OneWay}"
                          PlaceholderText="Fill with your template" />
             </PivotItem>

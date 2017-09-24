@@ -44,7 +44,7 @@ namespace MustacheDemo.App
 
         private void TemplateTextBox_OnTextChanged(object sender, TextChangedEventArgs e)
         {
-            _viewModel.Template = ((TextBox) sender).Text;
+            _viewModel.TemplateText = ((TextBox) sender).Text;
         }
 
         private void Pivot_OnSelectionChanged(object sender, SelectionChangedEventArgs e)
