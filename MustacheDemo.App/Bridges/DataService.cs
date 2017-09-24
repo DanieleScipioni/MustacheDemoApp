@@ -22,16 +22,29 @@
 // SOFTWARE.
 // ******************************************************************************
 
+using Microsoft.Data.Sqlite;
 using MustacheDemo.App.UserControls;
 using MustacheDemo.App.ViewModels;
+using MustacheDemo.Core.Database;
 using System;
+using System.Collections.Generic;
 using System.Threading.Tasks;
 using Windows.UI.Xaml.Controls;
+using MustacheDemo.Data;
 
 namespace MustacheDemo.App.Bridges
 {
     internal class DataService
     {
+        public async Task<List<Template>> GetTemplates()
+        {
+            using (SqliteConnection connection = DatabaseConnectionManager.GetMustacheDemoConnection())
+            {
+                connection.Open();
+                return await Template.GetTemplates(connection);
+            }
+        }
+
         public async Task<Tuple<string, object>> NewData(bool canEditKey)
         {
             var editDataUserControlViewModel = new EditDataUserControlViewModel(canEditKey);
@@ -80,6 +93,15 @@ namespace MustacheDemo.App.Bridges
                 );
             }
             return null;
+        }
+
+        public async Task SaveTemplate(Template template)
+        {
+            using (SqliteConnection connection = DatabaseConnectionManager.GetMustacheDemoConnection())
+            {
+                connection.Open();
+                await Template.SaveTemplate(connection, template);
+            }
         }
     }
 }
