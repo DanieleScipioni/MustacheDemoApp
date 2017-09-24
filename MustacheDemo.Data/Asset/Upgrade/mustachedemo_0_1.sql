@@ -1,15 +1,22 @@
-﻿CREATE TABLE [data](
-    [id] TEXT PRIMARY KEY NOT NULL UNIQUE, 
-    [content] TEXT);
-
-CREATE TABLE [templates](
+﻿CREATE TABLE [templates] (
     [name] TEXT PRIMARY KEY NOT NULL UNIQUE, 
-    [template] TEXT);
+    [template] TEXT
+);
 
-INSERT INTO [templates]
-([name],[template])
+CREATE TABLE [data] (
+    [id] TEXT PRIMARY KEY NOT NULL UNIQUE, 
+    [content] TEXT
+);
+
+CREATE TABLE [template_data](
+    [template] TEXT NOT NULL REFERENCES templates([name]), 
+    [data] TEXT NOT NULL REFERENCES data([id]), 
+    PRIMARY KEY([template], [data])
+);
+
+INSERT INTO [templates] ([name],[template])
 VALUES
-('First template' ,'Hello {{Name}}
+('Sample template' ,'Hello {{Name}}
 You have just won {{Value}} {{Currency}}!
 {{#InCa}}
 Well, {{TaxedValue}} {{Currency}}, after taxes.
@@ -20,3 +27,6 @@ Well, {{TaxedValue}} {{Currency}}, after taxes.
 {{#d}}
 {{e}}: {{tt}}
 {{/d}}');
+
+INSERT INTO [data] ([id],[content])
+VALUES ('Sample data','');
