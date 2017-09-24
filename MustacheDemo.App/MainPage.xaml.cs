@@ -64,8 +64,7 @@ namespace MustacheDemo.App
         private void DataEntry_OnDoubleTapped(object sender, DoubleTappedRoutedEventArgs e)
         {
             var frameworkElement = e.OriginalSource as FrameworkElement;
-            var keyValue = frameworkElement?.DataContext as ContextEntry;
-            if (keyValue == null) return;
+            if (!(frameworkElement?.DataContext is ContextEntry keyValue)) return;
 
             e.Handled = true;
 
@@ -78,8 +77,7 @@ namespace MustacheDemo.App
 
         private void UIElement_OnPointerPressed(object sender, PointerRoutedEventArgs e)
         {
-            var uiElement = sender as UIElement;
-            if (uiElement == null) return;
+            if (!(sender is UIElement uiElement)) return;
 
             PointerPoint currentPoint = e.GetCurrentPoint(uiElement);
             _mouseBackButtonPressed = currentPoint.Properties.IsXButton1Pressed;
