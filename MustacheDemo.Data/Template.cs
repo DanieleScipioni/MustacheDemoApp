@@ -57,5 +57,12 @@ namespace MustacheDemo.Data
 
             return templates;
         }
+
+        public static async Task SaveTemplate(SqliteConnection connection, Template template)
+        {
+            const string stmt = "UPDATE [templates] SET [template] = @template WHERE [name] = @name";
+            await connection.ExecuteNonQueryAsync(stmt, new SqliteParameter("name", template.Name),
+                new SqliteParameter("template", template.Text));
+        }
     }
 }
