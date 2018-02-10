@@ -11,7 +11,7 @@ CREATE TABLE [data] (
 CREATE TABLE [template_data](
     [template_name] TEXT NOT NULL REFERENCES templates([name]), 
     [data_id] TEXT NOT NULL REFERENCES data([id]), 
-    PRIMARY KEY([template], [data])
+    PRIMARY KEY([template_name], [data_id])
 );
 
 INSERT INTO [templates] ([name],[template])
