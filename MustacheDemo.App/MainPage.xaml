@@ -117,6 +117,7 @@
                     <AppBarButton Icon="Delete" Label="Delete" Command="{x:Bind _viewModel.RemoveDataCommand}"/>
                     <AppBarButton Icon="Edit" Label="Edit" Command="{x:Bind _viewModel.EditSelectedDataCommand}"/>
                     <AppBarButton Icon="Add" Label="Add" Command="{x:Bind _viewModel.AddDataCommand}"/>
+                    <AppBarButton Icon="Save" Label="Edit template" Command="{x:Bind _viewModel.SaveDataCommand}"/>
                 </CommandBar.PrimaryCommands>
             </CommandBar>
         </StackPanel>

@@ -101,6 +101,7 @@
     <Compile Include="..\MustacheDemo.App\Properties\AssemblyInfo.cs">
       <Link>Properties\AssemblyInfo.cs</Link>
     </Compile>
+    <Compile Include="Data.cs" />
     <Compile Include="DataTypes.cs" />
     <Compile Include="Schema.cs" />
     <Compile Include="Template.cs" />

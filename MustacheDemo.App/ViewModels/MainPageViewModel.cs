@@ -30,6 +30,9 @@ using System.Collections;
 using System.Collections.Generic;
 using System.Collections.ObjectModel;
 using System.Linq;
+using System.Runtime.Serialization;
+using System.Text;
+using System.Xml;
 using Template = MustacheDemo.Data.Template;
 
 namespace MustacheDemo.App.ViewModels
@@ -111,6 +114,8 @@ namespace MustacheDemo.App.ViewModels
 
         public readonly DelegateCommand SaveTemplateCommand;
 
+        public readonly DelegateCommand SaveDataCommand;
+
         public readonly DelegateCommand AddDataCommand;
 
         public readonly DelegateCommand EditSelectedDataCommand;
@@ -136,6 +141,8 @@ namespace MustacheDemo.App.ViewModels
             RenderCommand = new DelegateCommand(Render, RenderCanExecute);
             EditTemplateCommand = new DelegateCommand(EditTemplate, EditTemplateCanExecute);
             SaveTemplateCommand = new DelegateCommand(SaveTemplateAction, SaveTemplateCanExecute);
+            SaveDataCommand = new DelegateCommand(SaveDataAction);
+
             AddDataCommand = new DelegateCommand(AddData);
             EditSelectedDataCommand = new DelegateCommand(EditSelectedData);
             RemoveDataCommand = new DelegateCommand(RemoveData);
@@ -253,6 +260,17 @@ namespace MustacheDemo.App.ViewModels
         private bool SaveTemplateCanExecute(object parameter)
         {
             return _canSave;
+        }
+
+        private void SaveDataAction(object obj)
+        {
+            var dataContractSerializer = new DataContractSerializer(typeof(Dictionary<string, object>));
+            var stringBuilder = new StringBuilder();
+            using (XmlWriter xmlWriter = XmlWriter.Create(stringBuilder))
+            {
+                dataContractSerializer.WriteObject(xmlWriter, _data);
+            }
+            string s = stringBuilder.ToString();
         }
 
         private async void AddData(object parameter)

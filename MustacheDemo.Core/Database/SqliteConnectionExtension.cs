@@ -52,10 +52,11 @@ namespace MustacheDemo.Core.Database
             }
         }
 
-        public static async Task<SqliteDataReader> ExecuteReaderAsync(this SqliteConnection connection, string commandText)
+        public static async Task<SqliteDataReader> ExecuteReaderAsync(this SqliteConnection connection, string commandText, params SqliteParameter[] parameters)
         {
             using (var command = new SqliteCommand(commandText, connection))
             {
+                command.Parameters.AddRange(parameters);
                 return await command.ExecuteReaderAsync();
             }
         }
